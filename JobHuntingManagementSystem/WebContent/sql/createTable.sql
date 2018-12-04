@@ -33,6 +33,7 @@ create table student(
   mail_address varchar(256) unique,
   school_year int(1) not null default 1,
   course_id char(5) not null,
+  graduation_flg boolean not null default false,
   user_id char(16),
   foreign key (course_id) references course(course_id),
   foreign key (user_id) references account(user_id)
@@ -40,7 +41,6 @@ create table student(
 
 create table repetition_list(
   student_id int(7) primary key,
-  year date not null,
   foreign key (student_id) references student(student_id)
 );
 
@@ -50,7 +50,6 @@ create table teacher(
   belongs_id char(1) not null,
   mail_address varchar(256) not null unique,
   admin_flg boolean not null default false,
-  image_filename text not null,
   user_id char(16) not null,
   foreign key (belongs_id) references belongs(belongs_id),
   foreign key (user_id) references account(user_id)
@@ -59,8 +58,8 @@ create table teacher(
 create table charge_class(
   teacher_id int(2),
   course_id char(5),
-  school_year int(1) not null,
-  primary key(teacher_id,course_id),
+  school_year int(1),
+  primary key(teacher_id,course_id,school_year),
   foreign key (teacher_id) references teacher(teacher_id),
   foreign key (course_id) references course(course_id)
 );
@@ -70,7 +69,7 @@ create table company (
   company_name text not null,
   postal_code varchar(8) not null,
   address text not null,
-  phone_number varchar(12) not null
+  phone_number varchar(14) not null
 );
 
 create table type_of_industry(
@@ -109,12 +108,12 @@ create table contents_test (
   contents_test_id int primary key auto_increment,
   pdf_id char(8) not null,
   n int(1) not null,
-  start_date date not null,
-  start_hour int(2) not null,
-  start_minute int(2) not null,
+  start_date date,
+  start_hour int(2),
+  start_minute int(2),
   last_hour int(2),
   last_minute int(2),
-  test_category text not null,
+  test_category text,
   writing text,
   viewer_no int(2),
   view_time int(3),
@@ -140,7 +139,7 @@ create table document_application(
   issue_fee int(4) as((graduation_certificate_flg + record_certificate_flg + health_certificate_flg + nomination_form_flg) * 100) not null,
   issue_flg boolean not null default false,
   destination int(1),
-  teacher_id int(2) not null,
+  teacher_id int(2),
   foreign key (student_id) references student(student_id),
   foreign key (company_id) references company(company_id),
   foreign key (teacher_id) references teacher(teacher_id)
@@ -163,4 +162,12 @@ create table document_other_contents(
   document_application_id char(8) primary key,
   contents text not null,
   foreign key (document_application_id) references document_application(document_application_id)
+);
+
+create table log(
+  log_id int primary key auto_increment,
+  log_datetime datetime not null,
+  login_id char(16) not null,
+  login_pw char(255) not null,
+  login_sorf boolean not null default false
 );

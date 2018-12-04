@@ -1,3 +1,4 @@
+drop table log;
 drop table document_other_contents;
 drop table document_contents;
 drop table destination;
