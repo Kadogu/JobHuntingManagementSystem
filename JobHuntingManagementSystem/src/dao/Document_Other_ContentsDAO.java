@@ -107,4 +107,44 @@ public class Document_Other_ContentsDAO {
 		}
 		return contents;
 	}
+
+	/** 届出書その他内容データを削除するためのもの
+	 *  @param document_application_id - 削除する届出書その他内容データに関連する届出書データの届出書ID
+	 *  @return row - deleteの行数
+	 */
+	public static int dropDocument_Other_Contents(String document_application_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int row = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "delete from " + TABLE + " where document_application_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, document_application_id);
+			row = pstmt.executeUpdate();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return row;
+	}
 }

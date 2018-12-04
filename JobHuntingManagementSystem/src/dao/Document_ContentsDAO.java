@@ -15,7 +15,7 @@ public class Document_ContentsDAO {
 	private static final String TABLE = "document_contents";
 
 	/** 届出書の応募書類の一覧を取得するために使用
-	 *  戻り値 String[] documents //取得した応募書類の一覧
+	 *  @return documents - 取得した応募書類の一覧
 	 */
 	public static String[] getDocuments(){
 		Connection con = null;

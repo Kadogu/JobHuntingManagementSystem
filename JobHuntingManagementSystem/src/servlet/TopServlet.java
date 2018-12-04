@@ -48,7 +48,8 @@ public class TopServlet extends HttpServlet {
 
 		boolean flg = Login.login(user_id, pw); //ログイン成功か失敗かを判断
 
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
+
 		String view = "WEB-INF/view/";
 
 		if(flg){	//ログイン成功の場合
@@ -57,22 +58,26 @@ public class TopServlet extends HttpServlet {
 			if(student_id != 0){	//学生データと連携していた場合
 				session.setAttribute("category", "s");
 				session.setAttribute("student_id", student_id);
-				view += "mainStudent.jsp";
+				view += "mainStudent.jsp";	//メインページ(生徒版)
 			}else{	//学生データと連携していない場合
-				int teacher_id = TeacherDAO.searchTeacher_id(user_id);
+				int teacher_id = TeacherDAO.searchTeacher_Id(user_id);
 
 				if(teacher_id != 0){	//教師データと連携していた場合
 					session.setAttribute("category", "t");
 					session.setAttribute("teacher_id", teacher_id);
-					view += "mainTeacher.jsp";
-				}else{
+					view += "mainTeacher.jsp";	//メインページ(教師版)
+				}else{	//学生データとも教師データとも連携していない場合
+					String error = "IDまたはPWが違います";
+					request.setAttribute("error", error);
 
+					view += "top.jsp";	//トップページ
 				}
 			}
 		}else{	//ログイン失敗の場合
 			String error = "IDまたはPWが違います";
 			request.setAttribute("error", error);
-			view += "top.jsp";
+
+			view += "top.jsp";	//トップページ
 		}
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher(view);

@@ -3,7 +3,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="bin.Cast" %>
 <%@ page import="dto.Course" %>
-<%@ page import="dto.Department" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -12,12 +11,11 @@
 	</head>
 	<body>
 	<%
-		ArrayList<Department> departmentList = Cast.autoCast(request.getAttribute("departmentList"));
 		ArrayList<Course> courseList = Cast.autoCast(request.getAttribute("courseList"));
 	%>
 		<div>
 			<div>
-				<form action="" method="">
+				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
@@ -26,15 +24,6 @@
 				<h1>学籍番号追加</h1>
 
 				<form action="StudentRelation" method="post">
-					<label>
-						<select name="department" required>
-									<option disabled selected></option>
-							<%	for(Department department : departmentList){	%>
-									<option value="<%= department.getDepartment_id() %>"><%= department.getDepartment_name() %></option>
-							<%	}	%>
-						</select>
-					科</label>
-
 					<label>
 						<select name="course" required>
 									<option disabled selected></option>
@@ -48,17 +37,18 @@
 						<select name="school_year" required>
 									<option disabled selected></option>
 							<%	for(int i = 1; i <= 4; i++){	%>
-									<option value="<%= i %>"><%= i %></option>
+									<option><%= i %></option>
 							<%	}	%>
 						</select>
 					年</label>
 
-					<label><input type="number" name="number_of_people" required>人</label>
+					<label><input type="number" name="number_of_people" min="1" max="99" required>人</label><br>
 
+					<input type="hidden" name="status" value="student_id_add">
 					<input type="submit" value="追加">
 				</form>
 
-				<form action="" method="">
+				<form action="Main" method="get">
 					<input type="submit" value="キャンセル">
 				</form>
 			</div>

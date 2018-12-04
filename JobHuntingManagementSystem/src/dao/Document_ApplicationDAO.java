@@ -203,8 +203,62 @@ public class Document_ApplicationDAO {
 		return dbDocument_application_id;
 	}
 
+	/** 確認が必要な届出書数をカウントするためのもの
+	 *  @param bring_mailing - 持参か郵送かの振り分けのため
+	 * 	@param teacher_id - ログインしている教師の教師ID
+	 *  @return count - 確認が必要な届出書数
+	 */
+	public static int countDocument_ApplicationList(boolean bring_mailing, int teacher_id){
+		Connection con = null;
+		PreparedStatement pstmt  = null;
+		ResultSet rs  = null;
+		int count = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select count(document_application_id) as count from " + TABLE + " where bring_mailing = ? and teacher_id = ? and issue_flg = false";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setBoolean(1, bring_mailing);
+			pstmt.setInt(2, teacher_id);
+			rs = pstmt.executeQuery();
+			if(rs.next()){
+				count = rs.getInt("count");
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return count;
+	}
+
 	/** 確認が必要な届出書のリストを取得するためのもの
-	 * 	@param bring_mailing - 持参か郵送かの振り分けのため
+	 *  @param bring_mailing - 持参か郵送かの振り分けのため
 	 * 	@param teacher_id - ログインしている教師の教師ID
 	 *  @return document_applicationList - 確認が必要な届出書のリスト
 	 */
@@ -368,6 +422,144 @@ public class Document_ApplicationDAO {
 			String sql = "update " + TABLE + " set issue_flg = true where document_application_id = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, document_application_id);
+			row = pstmt.executeUpdate();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return row;
+	}
+
+	/** 生徒の卒業、アカウント削除の処理で届出書データを削除する時に使用する届出書リストを取得するためのもの
+	 *  @param student_id - 作成した学生の学籍番号
+	 *  @return list - 取得した届出書リスト
+	 */
+	public static ArrayList<Document_Application> getDocument_ApplicationList(int student_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		ArrayList<Document_Application> list = new ArrayList<Document_Application>();
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select document_application_id, other_flg, destination from " + TABLE + " where student_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, student_id);
+			rs = pstmt.executeQuery();
+			while(rs.next()){
+				Document_Application document_application = new Document_Application();
+				document_application.setDocument_application_id(rs.getString("document_application_id"));
+				int[] documents_flg = new int[6];
+				documents_flg[5] = rs.getInt("other_flg");
+				document_application.setDocuments_flg(documents_flg);
+				document_application.setDestination(rs.getInt("destination"));
+				list.add(document_application);
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return list;
+	}
+
+	/** 届出書の教師IDをnullにするのに使用
+	 *  @param teacher_id - nullにする教師の教師ID
+	 *  @return row - updateの行数
+	 */
+	public static int clearTeacher_Id(int teacher_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int row = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "update " + TABLE + " set teacher_id = null where teacher_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, teacher_id);
+			row = pstmt.executeUpdate();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return row;
+	}
+
+	/** 届出書データを削除するためのもの
+	 *  @param student_id - 削除する届出書データを作成した学生の学籍番号
+	 *  @return row - deleteの行数
+	 */
+	public static int dropDocument_Application(int student_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int row = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "delete from " + TABLE + " where student_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, student_id);
 			row = pstmt.executeUpdate();
 		}catch(ClassNotFoundException e){
 			e.printStackTrace();

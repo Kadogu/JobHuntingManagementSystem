@@ -55,20 +55,20 @@ public class AccountCreateServlet extends HttpServlet {
 		String view = "WEB-INF/view/";
 
 		if(pw == null){	//IDが使用済でない場合
-			pw = request.getParameter("pw");
-			String category = request.getParameter("user");
+			HttpSession session = request.getSession(false);
 
+			pw = request.getParameter("pw");
 			String hashPW = AccountDAO.hashPW(pw);
 
-			Account account = new Account(user_id, hashPW, false);
-
-			HttpSession session = request.getSession();
+			String category = request.getParameter("user");
 			session.setAttribute("category", category);
+
+			Account account = new Account(user_id, hashPW);
 			session.setAttribute("account", account);
 
-			if("s".equals(category)){
+			if("s".equals(category)){	//ユーザーが学生の場合
 				view += "studentDataConfirmation.jsp"; //学生データ確認ページ
-			}else if("t".equals(category)){
+			}else if("t".equals(category)){	//ユーザーが教師の場合
 				ArrayList<Belongs> belongsList = BelongsDAO.getBelongsList();
 				request.setAttribute("belongsList", belongsList);
 
@@ -76,10 +76,16 @@ public class AccountCreateServlet extends HttpServlet {
 				request.setAttribute("courseList", courseList);
 
 				view += "teacherDataRegistration.jsp"; //教師データ登録ページ
+			}else{	//ユーザーの種類が設定外の場合
+				session.removeAttribute("category");
+				session.removeAttribute("account");
+
+				view += "top.jsp";	//トップページ
 			}
 		}else{	//IDが使用されている場合
 			String error = "IDが使用されています";
 			request.setAttribute("error", error);
+
 			view += "accountCreate.jsp";	//新規アカウント作成ページ
 		}
 

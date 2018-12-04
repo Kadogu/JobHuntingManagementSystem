@@ -19,7 +19,7 @@
 			<h1>教師データ登録</h1>
 
 			<form action="UserDataRegistration" method="post">
-				<label>氏名:<input type="text" name="name" required></label><br>
+				<label>氏名<span style="color:red">必須</span>:<input type="text" name="name" size="16" maxlength="16" required></label><br>
 
 				<label>所属:
 					<select name="belongs" required>
@@ -30,9 +30,9 @@
 					</select>
 				</label><br>
 
-				<p>担当クラス:
-					<select name="charge_class">
-						<option disabled selected></option>
+				<p>担当クラス(複数選択可):
+					<select name="charge_class" multiple size="5" required>
+						<option value="-">担当クラスがない場合はこちら</option>
 						<%
 							for(Course course : courseList){
 								for(int i = 1; i <= course.getYear(); i++){
@@ -44,17 +44,14 @@
 						%>
 					</select>
 				</p>
-				<input type="submit" value="追加"><br>
 
-				<label>メールアドレス:<input type="email" name="mail_address" required></label><br>
-				<p>※アカウントロックの通知などに使用します</p>
-
-				<label>ハンコ画像:<input type="file" name="image_filename" required></label><br>
+				<label>メールアドレス<span style="color:red">必須</span>:<input type="email" name="mail_address" required></label><br>
+				<p>※PW変更の際に使用します</p>
 
 				<input type="submit" value="登録">
 			</form>
 
-			<form action="" method="">
+			<form action="Top" method="get">
 				<input type="submit" value="キャンセル">
 			</form>
 		</div>

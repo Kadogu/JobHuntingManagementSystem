@@ -10,7 +10,7 @@
 		<div>
 			<h1>アカウント登録失敗</h1>
 			<p>アカウント登録に失敗しました。</p>
-			<p><a href="">初めから</a>やり直して下さい。</p>
+			<p><a href="<%= request.getContextPath()%>/AccountCreate">初めから</a>やり直して下さい。</p>
 		</div>
 	</body>
 </html>

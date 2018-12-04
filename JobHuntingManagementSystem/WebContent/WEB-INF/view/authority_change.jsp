@@ -13,12 +13,12 @@
 	</head>
 	<body>
 	<%
-		ArrayList<Teacher> list = Cast.autoCast(session.getAttribute("list"));
+		ArrayList<Teacher> teachers = Cast.autoCast(session.getAttribute("teachers"));
 		HashMap<String, String> map = BelongsDAO.getBelongsMap();
 	%>
 		<div>
 			<div>
-				<form action="" method="">
+				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
@@ -34,30 +34,30 @@
 							<th>権限</th>
 						</tr>
 
-						<%	for(Teacher teacher : list){	%>
-								<tr>
-									<td><%=  teacher.getName() %></td>
+					<%	for(Teacher teacher : teachers){	%>
+							<tr>
+								<td><%= teacher.getName() %></td>
 
-									<td><%= map.get(teacher.getBelongs_id()) %></td>
+								<td><%= map.get(teacher.getBelongs_id()) %></td>
 
-									<td>
-										<% if(teacher.isAdmin_flg()){ %>
-												<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="true" checked="checked">有</label>
-												<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="false">無</label>
-										<% }else{ %>
-												<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="true">有</label>
-												<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="false" checked="checked">無</label>
-										<% } %>
-									</td>
-								</tr>
-						<%	}	%>
+								<td>
+								<%	if(teacher.isAdmin_flg()){	%>
+										<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="true" checked="checked">有</label>
+										<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="false">無</label>
+								<%	}else{	%>
+										<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="true">有</label>
+										<label><input type="radio" name="<%= teacher.getTeacher_id() %>" value="false" checked="checked">無</label>
+								<%	}	%>
+								</td>
+							</tr>
+					<%	}	%>
 					</table>
 
 					<input type="hidden" name="status" value="authority_change">
 					<input type="submit" value="確定">
 				</form>
 
-				<form action="" method="">
+				<form action="Main" method="get">
 					<input type="submit" value="キャンセル">
 				</form>
 			</div>

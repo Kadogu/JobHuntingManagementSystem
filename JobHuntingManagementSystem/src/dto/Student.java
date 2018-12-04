@@ -8,18 +8,16 @@ public class Student implements Serializable{
 	private String mail_address;
 	private int school_year;
 	private String course_id;
-	private int job_hunting_state;
 	private String user_id;
 
 	public Student(){}
 	public Student(int student_id, String name, String mail_address, int school_year, String course_id,
-			int job_hunting_state, String user_id) {
+			String user_id) {
 		this.student_id = student_id;
 		this.name = name;
 		this.mail_address = mail_address;
 		this.school_year = school_year;
 		this.course_id = course_id;
-		this.job_hunting_state = job_hunting_state;
 		this.user_id = user_id;
 	}
 
@@ -56,13 +54,6 @@ public class Student implements Serializable{
 	}
 	public void setCourse_id(String course_id) {
 		this.course_id = course_id;
-	}
-
-	public int getJob_hunting_state() {
-		return job_hunting_state;
-	}
-	public void setJob_hunting_state(int job_hunting_state) {
-		this.job_hunting_state = job_hunting_state;
 	}
 
 	public String getUser_id() {

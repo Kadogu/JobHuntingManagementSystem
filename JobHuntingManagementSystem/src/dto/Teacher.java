@@ -8,18 +8,16 @@ public class Teacher implements Serializable{
 	private String belongs_id;
 	private String mail_address;
 	private boolean admin_flg;
-	private String image_filename;
 	private String user_id;
 
 	public Teacher(){}
 	public Teacher(int teacher_id, String name, String belongs_id, String mail_address, boolean admin_flg,
-			String image_filename, String user_id) {
+			String user_id) {
 		this.teacher_id = teacher_id;
 		this.name = name;
 		this.belongs_id = belongs_id;
 		this.mail_address = mail_address;
 		this.admin_flg = admin_flg;
-		this.image_filename = image_filename;
 		this.user_id = user_id;
 	}
 
@@ -56,13 +54,6 @@ public class Teacher implements Serializable{
 	}
 	public void setAdmin_flg(boolean admin_flg) {
 		this.admin_flg = admin_flg;
-	}
-
-	public String getImage_filename() {
-		return image_filename;
-	}
-	public void setImage_filename(String image_filename) {
-		this.image_filename = image_filename;
 	}
 
 	public String getUser_id() {

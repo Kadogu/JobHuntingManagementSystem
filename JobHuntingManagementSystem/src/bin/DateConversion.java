@@ -1,7 +1,9 @@
 package bin;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class DateConversion {
 
@@ -42,6 +44,30 @@ public class DateConversion {
 			}
 			return LocalDate.of(work[0], work[1], work[2]);
 		}else{
+			return null;
+		}
+	}
+
+	/** LocalDateTimeからsql.Timestampに変換するために使用
+	 *  @param localDatetime - 変換したいLocalDateTime型のインスタンス
+	 *  @return timestamp - 変換した後のsql.Timestamp型のインスタンス
+	 */
+	public static Timestamp timestampConversion(LocalDateTime localDateTime){
+		if(localDateTime != null){	//localDateTimeがnullじゃない場合
+			return Timestamp.valueOf(localDateTime);
+		}else{	//nullの時
+			return null;
+		}
+	}
+
+	/** sql.TimestampからLocalDateTimeに変換するために使用
+	 *  @param timestamp - 変換したいsql.Timestamp型のインスタンス
+	 *  @return localDateTime - 変換した後のLocalDateTime型のインスタンス
+	 */
+	public static LocalDateTime localDateTimeConversion(Timestamp timestamp){
+		if(timestamp != null){	//timestampがnullじゃない場合
+			return timestamp.toLocalDateTime();
+		}else{	//nullの時
 			return null;
 		}
 	}

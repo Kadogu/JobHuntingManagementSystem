@@ -1,6 +1,9 @@
 package test.dao;
 
+import java.util.ArrayList;
+
 import dao.StudentDAO;
+import dto.Student;
 
 public class StudentDAOTest {
 
@@ -63,8 +66,16 @@ public class StudentDAOTest {
 //			System.out.println(student_id);
 //		}
 
-		int student_id = 4171102;
-		String name = StudentDAO.getName(student_id);
-		System.out.println("名前:" + name);
+//		int student_id = 4171102;
+//		String name = StudentDAO.getName(student_id);
+//		System.out.println("名前:" + name);
+
+		ArrayList<Student> studentList = StudentDAO.getStudentList("");
+		for(Student student : studentList){
+			System.out.println("学籍番号:" + student.getStudent_id());
+			System.out.println("氏名:" + student.getName());
+			System.out.println("コース:" + student.getCourse_id());
+			System.out.println("学年" + student.getSchool_year());
+		}
 	}
 }

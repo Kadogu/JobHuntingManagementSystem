@@ -55,7 +55,7 @@ public class ApplicationFormServlet extends HttpServlet {
 		String[] documents = Document_ContentsDAO.getDocuments();
 		request.setAttribute("documents", documents);
 
-		String view = "WEB-INF/view/application";
+		String view = "WEB-INF/view/";
 
 		String status = request.getParameter("status");
 
@@ -63,17 +63,17 @@ public class ApplicationFormServlet extends HttpServlet {
 			boolean bring_mailing = Boolean.valueOf(request.getParameter("bring"));
 			request.setAttribute("bring_mailing", bring_mailing);
 
-			view += "Confirmation.jsp";	//確認ページ
+			view += "applicationConfirmation.jsp";	//確認ページ
 		}else{	//それ以外の場合
 			int student_id = (int)session.getAttribute("student_id");
 
 			if("creating".equals(status)){	//届出書作成の場合
-				view += "Create.jsp";	//作成ページ
+				view += "applicationCreate.jsp";	//作成ページ
 			}else if("reading".equals(status)){	//届出書閲覧の場合
 				ArrayList<Document_Application> list = Document_ApplicationDAO.getDocument_Applications(student_id);
 				request.setAttribute("list", list);
 
-				view += "Reading.jsp";	//閲覧ページ
+				view += "applicationReading.jsp";	//閲覧ページ
 			}
 		}
 
@@ -89,7 +89,7 @@ public class ApplicationFormServlet extends HttpServlet {
 
 		String status = request.getParameter("status");
 
-		String view = "WEB-INF/view/application";
+		String view = "WEB-INF/view/";
 
 		if("creating".equals(status)){	//届出書作成の場合
 			HttpSession session = request.getSession(false);
@@ -97,11 +97,9 @@ public class ApplicationFormServlet extends HttpServlet {
 			Document_Application document_application = new Document_Application();
 
 			String document_application_id = CreateID.createID(8);
-
 			while(Document_ApplicationDAO.searchDocument_Application_Id(document_application_id) != null){
 				document_application_id = CreateID.createID(8);
 			}
-
 			document_application.setDocument_application_id(document_application_id);
 
 			LocalDate application_date = LocalDate.now();
@@ -129,7 +127,6 @@ public class ApplicationFormServlet extends HttpServlet {
 					documents_flg[i] = 1;
 				}
 			}
-
 			document_application.setDocuments_flg(documents_flg);
 
 			if(!bring_mailing){	//郵送の場合
@@ -153,23 +150,48 @@ public class ApplicationFormServlet extends HttpServlet {
 
 					if(destination_num == 1 || destination_num == 2){	//会社＋個人名入か別の場所の場合
 						Destination destination = new Destination();
+						boolean destinationFlg = true;
+
+						destination.setDocument_application_id(document_application_id);
 
 						if(destination_num == 2){	//別の場所の場合
 							String postal_code1 = request.getParameter("postal_code1");
 							String postal_code2 = request.getParameter("postal_code2");
-							destination.setPostal_code(postal_code1 + "-" + postal_code2);
 
-							destination.setAddress(request.getParameter("address"));
+							if(!"".equals(postal_code1) && !"".equals(postal_code2)){	//郵便番号が入力されていた場合
+								destination.setPostal_code(postal_code1 + "-" + postal_code2);
+							}else{	//入力されていない場合
+								destinationFlg = false;
+							}
+
+							String address = request.getParameter("address");
+
+							if(!"".equals(address)){	//住所が入力されていた場合
+								destination.setAddress(address);
+							}else{	//入力されていない場合
+								destinationFlg = false;
+							}
 						}
 
-						destination.setDocument_application_id(document_application_id);
+						String individual = request.getParameter("individual");
 
-						destination.setIndividual(request.getParameter("individual"));
+						if(destination_num == 1 && !"".equals(individual)){	//会社＋個人名入で個人名が入力されていた場合
+							destination.setIndividual(individual);
+						}else if(destination_num == 2){	//別の場所の場合
+							destination.setIndividual(individual);
+						}else{	//会社＋個人名入で個人名が入力されていない場合
+							destinationFlg = false;
+						}
 
-						row = DestinationDAO.addDestination(destination);
+						if(destinationFlg){	//入力された内容を格納して良い場合
+							row = DestinationDAO.addDestination(destination);
 
-						if(row == 0){	//送付先データの格納に失敗した場合
-							flg = false;
+							if(row == 0){	//送付先データの格納に失敗した場合
+								flg = false;
+							}
+						}else{	//良くない場合
+							destination_num = 0;
+							/*届出書の送付先を会社宛変更する処理*/
 						}
 					}
 				}
@@ -194,15 +216,15 @@ public class ApplicationFormServlet extends HttpServlet {
 
 					request.setAttribute("text", text);
 
-					view += "Completion.jsp";
+					view += "applicationCompletion.jsp";	//作成完了ページ
 				}else{	//送付先データ及びその他の内容データ格納に失敗した場合
 					/*送付先データ削除処理*/
 					/*その他の内容データ削除処理*/
 					/*届出書データ削除処理*/
-					view += "Error.jsp";
+					view += "error.jsp";	//エラーページ
 				}
 			}else{	//作成失敗した場合
-				view += "Error.jsp";
+				view += "error.jsp";	//エラーページ
 			}
 		}else if("notification".equals(status)){	//届出書確認後の通知の場合
 			HashMap<Integer, Student> studentMap = new HashMap<Integer, Student>();
@@ -258,7 +280,9 @@ public class ApplicationFormServlet extends HttpServlet {
 
 						sb.append("発行手数料は" + issue_fee + "円です。\n\n");
 
-						sb.append("忘れずにお支払い下さい。");
+						sb.append("忘れずにお支払い下さい。\n\n\n");
+
+						sb.append(getFooter());
 
 						String message = sb.toString();
 
@@ -274,10 +298,10 @@ public class ApplicationFormServlet extends HttpServlet {
 					}
 				}
 			}
-			if(cnt == document_application_idList.length){
-				view += "NotificationCompletion.jsp";	//通知完了ページ
+			if(cnt == document_application_idList.length){	//全ての通知が成功した場合
+				view += "applicationNotificationCompletion.jsp";	//通知完了ページ
 			}else{
-				view += "";	//通知失敗ページ
+				view += "error.jsp";	//通知失敗ページ
 			}
 		}
 

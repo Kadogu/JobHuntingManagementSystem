@@ -12,12 +12,13 @@
 		Company company = (Company)session.getAttribute("company");
 		String use = (String)session.getAttribute("use");
 		String action = "Report";
-		if("application".equals(use)){
+		if("application".equals(use)){	//届出書作成の場合
 			action = "ApplicationForm";
 		}
 	%>
 		<div>
 			<h1>会社選択確認</h1>
+
 			<p>会社名:<%= company.getCompany_name() %></p>
 			<p>郵便番号:<%= company.getPostal_code() %></p>
 			<p>住所:<%= company.getAddress() %></p>
@@ -30,7 +31,9 @@
 				<input type="submit" value="OK">
 			</form>
 
-			<form action="" method="">
+			<form action="Company" method="get">
+				<input type="hidden" name="status" value="choice">
+				<input type="hidden" name="use" value="<%= use %>">
 				<input type="submit" value="キャンセル">
 			</form>
 		</div>

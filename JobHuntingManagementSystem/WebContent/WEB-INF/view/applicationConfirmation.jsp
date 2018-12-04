@@ -5,6 +5,7 @@
 <%@ page import="bin.Cast" %>
 <%@ page import="dao.CompanyDAO" %>
 <%@ page import="dao.DestinationDAO" %>
+<%@ page import="dao.Document_ApplicationDAO" %>
 <%@ page import="dao.Document_Other_ContentsDAO" %>
 <%@ page import="dao.StudentDAO" %>
 <%@ page import="dto.Destination" %>
@@ -17,6 +18,7 @@
 	</head>
 	<body>
 	<%
+		int teacher_id = (int)session.getAttribute("teacher_id");
 		String[] documents = (String[])request.getAttribute("documents");
 		boolean bring_mailing = (boolean)request.getAttribute("bring_mailing");
 		String title;
@@ -27,16 +29,16 @@
 		if(bring_mailing){
 			title = "持参";
 			column = "準備完了";
-			document_applicationList = Cast.autoCast(session.getAttribute("bringDocument_applicationList"));
+			document_applicationList = Document_ApplicationDAO.getDocument_ApplicationList(true, teacher_id);
 		}else{
 			title = "郵送";
 			column = "済";
-			document_applicationList = Cast.autoCast(session.getAttribute("mailingDocument_applicationList"));
+			document_applicationList = Document_ApplicationDAO.getDocument_ApplicationList(false, teacher_id);
 		}
 	%>
 		<div>
 			<div>
-				<form action="" method="">
+				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
@@ -52,11 +54,11 @@
 							<th>申請書類</th>
 							<th>会社名</th>
 
-							<%	if(!bring_mailing){	%>
-									<th>郵便番号</th>
-									<th>住所</th>
-									<th>個人名</th>
-							<%	}	%>
+						<%	if(!bring_mailing){	%>
+								<th>郵便番号</th>
+								<th>住所</th>
+								<th>個人名</th>
+						<%	}	%>
 
 							<th>申請者</th>
 							<th>学籍番号</th>
@@ -79,7 +81,7 @@
 									}
 								}
 								if(documents_flg[documents.length - 1] == 1){	//その他にチェックが入っていた場合
-									sb.append("," + Document_Other_ContentsDAO.getContents(d_aList.getDocument_application_id()));
+									sb.append("," + Document_Other_ContentsDAO.getContents(d_a_id));
 								}
 							%>
 								<td><label for="<%= d_a_id %>"><%= sb.substring(1, sb.length()) %></label></td>
@@ -91,17 +93,17 @@
 									String postal_code = "-";
 									String address = "-";
 									String individual = "-";
-									if(destination != null){
+									if(destination != null){	//データを取得できた場合
 										String work = destination.getPostal_code();
-										if(work != null){
+										if(work != null){	//データがあった場合
 											postal_code = work;
 										}
 										work = destination.getAddress();
-										if(work != null){
+										if(work != null){	//データがあった場合
 											address = work;
 										}
 										work = destination.getIndividual();
-										if(work != null){
+										if(work != null){	//データがあった場合
 											individual = work;
 										}
 									}
@@ -119,12 +121,13 @@
 							</tr>
 					<%	}	%>
 					</table>
+
 					<input type="hidden" name="bring_mailing" value="<%= bring_mailing %>">
 					<input type="hidden" name="status" value="notification">
 					<input type="submit" value="通知">
 				</form>
 
-				<form action="" method="">
+				<form action="Main" method="get">
 					<input type="submit" value="キャンセル">
 				</form>
 			</div>

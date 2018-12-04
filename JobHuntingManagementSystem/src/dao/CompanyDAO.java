@@ -107,13 +107,13 @@ public class CompanyDAO {
 
 	/** 会社選択・確認のために使用
 	 *  @param company_name - 検索する会社名(部分一致)
-	 *  @return list - 会社のリスト
+	 *  @return companies - 会社のリスト
 	 */
 	public static ArrayList<Company> getCompanies(String company_name){
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		ArrayList<Company> list = new ArrayList<Company>();
+		ArrayList<Company> companies = new ArrayList<Company>();
 
 		try{
 			Class.forName(CLASSNAME);
@@ -129,7 +129,7 @@ public class CompanyDAO {
 				company.setPostal_code(rs.getString("postal_code"));
 				company.setAddress(rs.getString("address"));
 				company.setPhone_number(rs.getString("phone_number"));
-				list.add(company);
+				companies.add(company);
 			}
 		}catch(ClassNotFoundException e){
 			e.printStackTrace();
@@ -160,7 +160,7 @@ public class CompanyDAO {
 
 			}
 		}
-		return list;
+		return companies;
 	}
 
 	/** 会社のデータを取得するために使用

@@ -19,7 +19,7 @@ public class BelongsDAO {
 	private static final String TABLE = "belongs";
 
 	/** 所属IDに対応した所属名を表示するためのもの
-	 *  戻り値 HashMap<String, String> map //Key:所属ID,Value:所属名
+	 *  @return map - Key:所属ID,Value:所属名
 	 */
 	public static HashMap<String, String> getBelongsMap(){
 		Connection con = null;
@@ -71,7 +71,7 @@ public class BelongsDAO {
 	}
 
 	/** 所属の一覧を取得するためのもの
-	 *  戻り値 ArrayList<Belongs> list //取得した所属の一覧のリスト
+	 *  @return list - 取得した所属一覧のリスト
 	 */
 	public static ArrayList<Belongs> getBelongsList(){
 		Connection con = null;

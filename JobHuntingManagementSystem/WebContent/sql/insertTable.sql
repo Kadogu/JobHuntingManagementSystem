@@ -1,24 +1,3 @@
-insert into official_absence_contents (official_absence_contents_id,contents) value(1,"説明会");
-insert into official_absence_contents (official_absence_contents_id,contents) value(2,"一次試験");
-insert into official_absence_contents (official_absence_contents_id,contents) value(3,"二次試験");
-insert into official_absence_contents (official_absence_contents_id,contents) value(4,"三次試験");
-insert into official_absence_contents (official_absence_contents_id,contents) value(5,"合同説明会");
-insert into official_absence_contents (official_absence_contents_id,contents) value(6,"内定式");
-insert into official_absence_contents (official_absence_contents_id,contents) value(7,"その他");
-insert into official_absence_contents (official_absence_contents_id,contents) value(8,"学校案内");
-
-insert into document_contents (document) value("履歴書");
-insert into document_contents (document) value("卒業見込証明書");
-insert into document_contents (document) value("成績証明書");
-insert into document_contents (document) value("健康診断書");
-insert into document_contents (document) value("推薦書");
-insert into document_contents (document) value("その他");
-
-insert into belongs (belongs_id, belongs_name) value("s","システム科");
-insert into belongs (belongs_id, belongs_name) value("b","ビジネス科");
-insert into belongs (belongs_id, belongs_name) value("d","デザイン科");
-insert into belongs (belongs_id, belongs_name) value("e","就職課");
-
 insert into department (department_id, department_name,number) value('itsys',"情報システム",1);
 insert into department (department_id, department_name,number) value('nwsq',"ネットワークセキュリティ",1);
 insert into department (department_id, department_name,number) value('sysen',"システム工学",1);
@@ -27,6 +6,11 @@ insert into department (department_id, department_name,number) value('itbis',"�
 insert into department (department_id, department_name,number) value('trbis',"会計ビジネス",2);
 insert into department (department_id, department_name,number) value('desig',"デザイン",3);
 insert into department (department_id, department_name,number) value('mulde',"総合デザイン",3);
+
+insert into belongs (belongs_id, belongs_name) value("s","システム科");
+insert into belongs (belongs_id, belongs_name) value("b","ビジネス科");
+insert into belongs (belongs_id, belongs_name) value("d","デザイン科");
+insert into belongs (belongs_id, belongs_name) value("e","就職課");
 
 insert into course (course_id,course_name,year,number,department_id, belongs_id) value('se',"システムエンジニア",2,1,"itsys","s");
 insert into course (course_id,course_name,year,number,department_id, belongs_id) value('app',"スマートフォンアプリ開発",2,1,"itsys","s");
@@ -46,11 +30,63 @@ insert into course (course_id,course_name,year,number,department_id, belongs_id)
 insert into course (course_id,course_name,year,number,department_id, belongs_id) value('arin',"建築インテリア",2,3,"desig","d");
 insert into course (course_id,course_name,year,number,department_id, belongs_id) value('mulde',"総合デザイン",3,4,"mulde","d");
 
-insert into contact_item (item_name) value("PW変更失敗");
-insert into contact_item (item_name) value("アカウントの確認失敗");
-insert into contact_item (item_name) value("メール送信失敗");
-insert into contact_item (item_name) value("パスコード入力エラー");
-insert into contact_item (item_name) value("報告書作成失敗");
-insert into contact_item (item_name) value("公欠届作成失敗");
-insert into contact_item (item_name) value("届出書作成失敗");
-insert into contact_item (item_name) value("その他");
+insert into type_of_industry (industry_code,industry_name) value("A","農業,林業");
+insert into type_of_industry (industry_code,industry_name) value("B","漁業");
+insert into type_of_industry (industry_code,industry_name) value("C","鉱業,採石業,砂利採取業");
+insert into type_of_industry (industry_code,industry_name) value("D","建設業");
+insert into type_of_industry (industry_code,industry_name) value("E","製造業");
+insert into type_of_industry (industry_code,industry_name) value("F","電気/ガス/熱供給/水道業");
+insert into type_of_industry (industry_code,industry_name) value("G","情報通信業");
+insert into type_of_industry (industry_code,industry_name) value("H","運輸業,郵便業");
+insert into type_of_industry (industry_code,industry_name) value("I","卸売業,小売業");
+insert into type_of_industry (industry_code,industry_name) value("J","金融業,保険業");
+insert into type_of_industry (industry_code,industry_name) value("K","不動産業,物品賃貸業");
+insert into type_of_industry (industry_code,industry_name) value("L","学術研究,専門/技術サービス業");
+insert into type_of_industry (industry_code,industry_name) value("M","宿泊業,飲食店");
+insert into type_of_industry (industry_code,industry_name) value("N","生活関連サービス業,娯楽業");
+insert into type_of_industry (industry_code,industry_name) value("O","教育学習支援業");
+insert into type_of_industry (industry_code,industry_name) value("P","医療,福祉");
+insert into type_of_industry (industry_code,industry_name) value("Q","複合サービス事業");
+insert into type_of_industry (industry_code,industry_name) value("R","サービス業(他に分類されないもの)");
+insert into type_of_industry (industry_code,industry_name) value("S","公務(他に分類されるものを除く)");
+insert into type_of_industry (industry_code,industry_name) value("T","分類不能の産業");
+
+insert into occupations (occupations_name) value("プログラマ");
+insert into occupations (occupations_name) value("システムエンジニア");
+insert into occupations (occupations_name) value("ネットワークエンジニア");
+insert into occupations (occupations_name) value("Webプログラマ");
+insert into occupations (occupations_name) value("セキュリティスペシャリスト");
+insert into occupations (occupations_name) value("エンデベットエンジニア");
+insert into occupations (occupations_name) value("ゲームプログラマ");
+insert into occupations (occupations_name) value("カスタマーエンジニア");
+insert into occupations (occupations_name) value("システムオペレータ");
+insert into occupations (occupations_name) value("モバイルアプリ開発エンジニア");
+insert into occupations (occupations_name) value("一般企業のWeb管理者");
+insert into occupations (occupations_name) value("プロジェクトマネージャー");
+insert into occupations (occupations_name) value("ITアーキテクト");
+insert into occupations (occupations_name) value("IT系・一般企業 経理・事務部門");
+insert into occupations (occupations_name) value("ITインストラクター");
+insert into occupations (occupations_name) value("販売員・営業");
+insert into occupations (occupations_name) value("鉄道職員");
+insert into occupations (occupations_name) value("郵便局員");
+insert into occupations (occupations_name) value("団体職員");
+insert into occupations (occupations_name) value("公務員");
+insert into occupations (occupations_name) value("一般企業経理・販売・営業部門");
+insert into occupations (occupations_name) value("一般企業IT・財務部門");
+insert into occupations (occupations_name) value("税理士・会計事務所");
+insert into occupations (occupations_name) value("金融機関");
+insert into occupations (occupations_name) value("グラフィックデザイナー");
+insert into occupations (occupations_name) value("Webデザイナー");
+insert into occupations (occupations_name) value("イラストレーター");
+insert into occupations (occupations_name) value("3DCGデザイナー");
+insert into occupations (occupations_name) value("漫画家");
+insert into occupations (occupations_name) value("アニメーター");
+insert into occupations (occupations_name) value("住宅設計士");
+insert into occupations (occupations_name) value("インテリアコーディネーター");
+
+insert into document_contents (document) value("履歴書");
+insert into document_contents (document) value("卒業見込証明書");
+insert into document_contents (document) value("成績証明書");
+insert into document_contents (document) value("健康診断書");
+insert into document_contents (document) value("推薦書");
+insert into document_contents (document) value("その他");

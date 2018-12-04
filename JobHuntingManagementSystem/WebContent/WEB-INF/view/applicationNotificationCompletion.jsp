@@ -9,7 +9,7 @@
 	<body>
 		<div>
 			<div>
-				<form action="" method="">
+				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
@@ -19,7 +19,7 @@
 
 				<p>通知が完了しました。</p>
 
-				<form action="" method="">
+				<form action="Main" method="get">
 					<input type="submit" value="メインページへ">
 				</form>
 			</div>

@@ -7,7 +7,6 @@ public class Belongs implements Serializable{
 	private String belongs_name;
 
 	public Belongs(){}
-
 	public Belongs(String belongs_id, String belongs_name) {
 		this.belongs_id = belongs_id;
 		this.belongs_name = belongs_name;

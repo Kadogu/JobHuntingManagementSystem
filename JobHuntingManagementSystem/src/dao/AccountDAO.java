@@ -33,7 +33,6 @@ public class AccountDAO {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user_id);
 			rs = pstmt.executeQuery();
-
 			if(rs.next()){
 				pw = rs.getString("pw");
 			}
@@ -110,9 +109,51 @@ public class AccountDAO {
 		return row;
 	}
 
+	/** PW変更に使用
+	 *  @param user_id - PWを変更したいアカウントのID
+	 *  @param pw - 格納する変更後のPW(ハッシュ化済)
+	 *  @return row - updateした結果の行数
+	 */
+	public static int changePW(String user_id, String pw){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int row = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "update " + TABLE + " set pw = ? where user_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, pw);
+			pstmt.setString(2, user_id);
+			row = pstmt.executeUpdate();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return row;
+	}
+
 	/** パスワードをハッシュ化するためのもの
 	 *  @param pw - ハッシュ化前のパスワード
-	 *  @reurn hashPW - ハッシュ化後のパスワード
+	 *  @return hashPW - ハッシュ化後のパスワード
 	 */
 	public static String hashPW(String pw){
 		Connection con = null;
@@ -128,7 +169,6 @@ public class AccountDAO {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, pw + solt);
 			rs = pstmt.executeQuery();
-
 			if(rs.next()){
 				hashPW = rs.getString("hashPW");
 			}

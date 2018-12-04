@@ -7,10 +7,10 @@
 	<title>学籍番号追加完了 | モリジョビ就活管理システム</title>
 	</head>
 	<body>
-	<% String text = (String)request.getAttribute("text"); %>
+	<%	String text = (String)request.getAttribute("text");	%>
 		<div>
 			<div>
-				<form action="" method="">
+				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
@@ -30,7 +30,7 @@
 					<input type="submit" value="確認">
 				</form>
 
-				<form action="" method="">
+				<form action="Main" method="get">
 					<input type="submit" value="メインページへ">
 				</form>
 			</div>

@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import dto.Course;
 
@@ -69,60 +70,8 @@ public class CourseDAO {
 		return number;
 	}
 
-	/** 学科IDからコースIDのリストを取得するために使用
-	 *  @param department_id - 取得したいコースIDに関係する学科ID
-	 *  @return list - 取得したコースIDのリスト
-	 */
-	public static ArrayList<String> getCourse_idList(String department_id){
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		ArrayList<String> list = new ArrayList<String>();
-
-		try{
-			Class.forName(CLASSNAME);
-			con = DriverManager.getConnection(URL,USER,PASSWORD);
-			String sql = "select course_id from " + TABLE + " where department_id = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, department_id);
-			rs = pstmt.executeQuery();
-			while(rs.next()){
-				list.add(rs.getString("course_id"));
-			}
-		}catch(ClassNotFoundException e){
-			e.printStackTrace();
-		}catch(SQLException e){
-			e.printStackTrace();
-		}finally{
-			try{
-				if(rs != null){
-					rs.close();
-				}
-			}catch(SQLException e){
-
-			}
-
-			try{
-				if(pstmt != null){
-					pstmt.close();
-				}
-			}catch(SQLException e){
-
-			}
-
-			try{
-				if(con != null){
-					con.close();
-				}
-			}catch(SQLException e){
-
-			}
-		}
-		return list;
-	}
-
 	/** コース一覧のリストを取得するためのもの
-	 *  戻り値 ArrayList<Course> //取得したコース一覧のリスト
+	 *  @return courseList - 取得したコース一覧のリスト
 	 */
 	public static ArrayList<Course> getCourseList(){
 		Connection con = null;
@@ -176,9 +125,61 @@ public class CourseDAO {
 		return courseList;
 	}
 
+	/** コースIDから該当コースの卒業年次を取得するためのもの
+	 *  @param course_id - 該当するコースのコースID
+	 *  @return year //取得した該当コースの卒業年次
+	 */
+	public static int getYear(String course_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int year = 2;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select year from " + TABLE + " where course_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, course_id);
+			rs = pstmt.executeQuery();
+			if(rs.next()){
+				year = rs.getInt("year");
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return year;
+	}
+
 	/** コースIDから学科IDを取得するためのもの
-	 *  String course_id //取得したい学科IDのコースID
-	 *  戻り値 String department_id //取得した学科ID
+	 *  @param course_id - 取得したい学科IDのコースID
+	 *  @return department_id //取得した学科ID
 	 */
 	public static String getDepartment_Id(String course_id){
 		Connection con = null;
@@ -226,5 +227,107 @@ public class CourseDAO {
 			}
 		}
 		return department_id;
+	}
+
+	/** コースIDからコース名を取得するためのもの
+	 *  @param course_id - 取得したいコース名のコースID
+	 *  @return course_name - 取得したコース名
+	 */
+	public static String getCourse_name(String course_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String course_name = null;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select course_name from " + TABLE + " where course_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, course_id);
+			rs = pstmt.executeQuery();
+			if(rs.next()){
+				course_name = rs.getString("course_name");
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return course_name;
+	}
+
+	/** コースマップを取得するためのもの
+	 *  @return courseMap - 取得したコースマップ
+	 */
+	public static HashMap<String, String> getCourseMap(){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		HashMap<String, String> courseMap = new HashMap<String, String>();
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select course_id, course_name from " + TABLE;
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while(rs.next()){
+				courseMap.put(rs.getString("course_id"), rs.getString("course_name"));
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return courseMap;
 	}
 }

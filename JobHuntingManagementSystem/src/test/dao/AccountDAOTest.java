@@ -16,8 +16,18 @@ public class AccountDAOTest {
 //		int row = AccountDAO.addUser(account);
 //		System.out.println(row);
 
-		String user_id = "aaaa";
-		int row = AccountDAO.dropAccount(user_id);
-		System.out.println(row);
+//		String user_id = "aaaa";
+//		int row = AccountDAO.dropAccount(user_id);
+//		System.out.println(row);
+
+		String user_id = "cccc";
+		String pw = "ccccCCCC.3";
+		String hashPW = AccountDAO.hashPW(pw);
+		int row = AccountDAO.changePW(user_id, hashPW);
+		if(row >= 1){
+			System.out.println("PW変更完了");
+		}else{
+			System.out.println("PW変更失敗");
+		}
 	}
 }
