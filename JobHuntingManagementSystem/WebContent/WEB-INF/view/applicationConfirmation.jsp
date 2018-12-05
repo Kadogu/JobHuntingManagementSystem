@@ -2,14 +2,17 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
-<%@ page import="bin.Cast" %>
+<%@ page import="dao.Charge_ClassDAO" %>
 <%@ page import="dao.CompanyDAO" %>
 <%@ page import="dao.DestinationDAO" %>
 <%@ page import="dao.Document_ApplicationDAO" %>
 <%@ page import="dao.Document_Other_ContentsDAO" %>
 <%@ page import="dao.StudentDAO" %>
+<%@ page import="dao.TeacherDAO" %>
+<%@ page import="dto.Charge_Class" %>
 <%@ page import="dto.Destination" %>
 <%@ page import="dto.Document_Application" %>
+<%@ page import="dto.Teacher" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -19,22 +22,40 @@
 	<body>
 	<%
 		int teacher_id = (int)session.getAttribute("teacher_id");
-		String[] documents = (String[])request.getAttribute("documents");
+		Teacher teacher = TeacherDAO.getTeacher(teacher_id);
+
 		boolean bring_mailing = (boolean)request.getAttribute("bring_mailing");
+		ArrayList<Document_Application> document_applicationList = new ArrayList<Document_Application>();
+
 		String title;
 		String column;
-		ArrayList<Document_Application> document_applicationList;
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM月dd日");
 
 		if(bring_mailing){
 			title = "持参";
 			column = "準備完了";
-			document_applicationList = Document_ApplicationDAO.getDocument_ApplicationList(true, teacher_id);
 		}else{
 			title = "郵送";
 			column = "済";
-			document_applicationList = Document_ApplicationDAO.getDocument_ApplicationList(false, teacher_id);
 		}
+
+		if("e".equals(teacher.getBelongs_id())){	//所属が就職課の場合
+			document_applicationList.addAll(Document_ApplicationDAO.getDocument_ApplicationList(bring_mailing));
+		}else{	//所属がそれ以外の場合
+			ArrayList<Charge_Class> charge_classList = Charge_ClassDAO.getCharge_ClassList(teacher_id);
+
+			ArrayList<Integer> student_idList = new ArrayList<Integer>();
+			for(Charge_Class charge_class : charge_classList){
+				ArrayList<Integer> list = StudentDAO.getStudent_idList(charge_class.getCourse_id(), charge_class.getSchool_year());
+				student_idList.addAll(list);
+			}
+
+			for(Integer student_id : student_idList){
+				document_applicationList.addAll(Document_ApplicationDAO.getDocument_ApplicationList(bring_mailing, student_id));
+			}
+		}
+
+		String[] documents = (String[])request.getAttribute("documents");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM月dd日");
 	%>
 		<div>
 			<div>

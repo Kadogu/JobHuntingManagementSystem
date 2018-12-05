@@ -795,6 +795,46 @@ public class PDFDAO {
 		return student_id;
 	}
 
+	/** 報告書のやり直しを指示した後にcc_flgとtc_flg、edc_flgをfalseにするために使用
+	 * 	@param pdf_id - やり直しにする報告書の報告書ID
+	 *  @return row - updateした結果の行数
+	 */
+	public static int remakeReport(String pdf_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int row = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "update " + TABLE + " set cc_flg = false, tc_flg = false, edc_flg = false where pdf_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, pdf_id);
+			row = pstmt.executeUpdate();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return row;
+	}
+
 	/** 報告書確認が済んでtc_flgかedc_flgを立てるためのもの
 	 * 	@param pdf_id - 確認が済んだ報告書の報告書ID
 	 *  @param belongs_id - 教師の所属ID

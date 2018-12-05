@@ -20,8 +20,12 @@
 		Teacher teacher = TeacherDAO.getTeacher(teacher_id);
 
 		int count = 0;
+		int bring_count = 0;
+		int mailing_count = 0;
 		if("e".equals(teacher.getBelongs_id())){	//所属が就職課の場合
 			count = PDFDAO.countCreatedReportList();
+			bring_count = Document_ApplicationDAO.countDocument_ApplicationList(true);
+			mailing_count = Document_ApplicationDAO.countDocument_ApplicationList(false);
 		}else{	//所属がそれ以外の場合
 			ArrayList<Charge_Class> charge_classList = Charge_ClassDAO.getCharge_ClassList(teacher_id);
 
@@ -33,11 +37,10 @@
 
 			for(Integer student_id : student_idList){
 				count += PDFDAO.countCreatedReportList(student_id);
+				bring_count += Document_ApplicationDAO.countDocument_ApplicationList(true, student_id);
+				mailing_count += Document_ApplicationDAO.countDocument_ApplicationList(false, student_id);
 			}
 		}
-
-		int bring_count = Document_ApplicationDAO.countDocument_ApplicationList(true, teacher_id);
-		int mailing_count = Document_ApplicationDAO.countDocument_ApplicationList(false, teacher_id);
 	%>
 		<div>
 			<div>

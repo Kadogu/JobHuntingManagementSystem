@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
 
 import bin.CreateID;
 import bin.DateConversion;
-import dao.Charge_ClassDAO;
 import dao.CompanyDAO;
 import dao.DestinationDAO;
 import dao.Document_ApplicationDAO;
@@ -134,10 +133,6 @@ public class ApplicationFormServlet extends HttpServlet {
 				document_application.setDestination(destination_num);
 			}
 
-			Student student = StudentDAO.searchStudent(student_id);
-			int teacher_id = Charge_ClassDAO.searchTeacher_id(student.getCourse_id(), student.getSchool_year());
-			document_application.setTeacher_id(teacher_id);
-
 			int row = Document_ApplicationDAO.createApplication(document_application);
 
 			session.removeAttribute("company");
@@ -190,8 +185,7 @@ public class ApplicationFormServlet extends HttpServlet {
 								flg = false;
 							}
 						}else{	//良くない場合
-							destination_num = 0;
-							/*届出書の送付先を会社宛変更する処理*/
+							row = Document_ApplicationDAO.updateDestination(document_application_id);
 						}
 					}
 				}
@@ -218,9 +212,10 @@ public class ApplicationFormServlet extends HttpServlet {
 
 					view += "applicationCompletion.jsp";	//作成完了ページ
 				}else{	//送付先データ及びその他の内容データ格納に失敗した場合
-					/*送付先データ削除処理*/
-					/*その他の内容データ削除処理*/
-					/*届出書データ削除処理*/
+					row = DestinationDAO.dropDestination(document_application_id);
+					row = Document_Other_ContentsDAO.dropDocument_Other_Contents(document_application_id);
+					row = Document_ApplicationDAO.dropDocument_Application(document_application_id);
+
 					view += "error.jsp";	//エラーページ
 				}
 			}else{	//作成失敗した場合

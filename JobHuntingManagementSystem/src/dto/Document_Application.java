@@ -14,23 +14,21 @@ public class Document_Application implements Serializable{
 	private int issue_fee;
 	private boolean issue_flg;
 	private int destination;
-	private int teacher_id;
 
 	public Document_Application(){}
 	public Document_Application(String document_application_id, LocalDate application_date, int student_id,
-			String company_id, boolean bring_mailng, LocalDate deadline, int[] documents_flg, int issue_fee,
-			boolean issue_flg, int destination, int teacher_id) {
+			String company_id, boolean bring_mailing, LocalDate deadline, int[] documents_flg, int issue_fee,
+			boolean issue_flg, int destination) {
 		this.document_application_id = document_application_id;
 		this.application_date = application_date;
 		this.student_id = student_id;
 		this.company_id = company_id;
-		this.bring_mailing = bring_mailng;
+		this.bring_mailing = bring_mailing;
 		this.deadline = deadline;
 		this.documents_flg = documents_flg;
 		this.issue_fee = issue_fee;
 		this.issue_flg = issue_flg;
 		this.destination = destination;
-		this.teacher_id = teacher_id;
 	}
 
 	public String getDocument_application_id() {
@@ -101,12 +99,5 @@ public class Document_Application implements Serializable{
 	}
 	public void setDestination(int destination) {
 		this.destination = destination;
-	}
-
-	public int getTeacher_id() {
-		return teacher_id;
-	}
-	public void setTeacher_id(int teacher_id) {
-		this.teacher_id = teacher_id;
 	}
 }

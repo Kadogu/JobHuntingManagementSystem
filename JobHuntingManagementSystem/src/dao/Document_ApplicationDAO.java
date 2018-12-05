@@ -35,7 +35,7 @@ public class Document_ApplicationDAO {
 			String sql = "insert into " + TABLE + " (document_application_id, application_date, "
 					+ "student_id, company_id, bring_mailing, deadline, resume_flg, graduation_certificate_flg, "
 					+ "record_certificate_flg, health_certificate_flg, nomination_form_flg, other_flg, "
-					+ "destination, teacher_id) value(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ "destination) value(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, document_application.getDocument_application_id());
 			pstmt.setDate(2, DateConversion.dateConversion(document_application.getApplication_date()));
@@ -50,7 +50,46 @@ public class Document_ApplicationDAO {
 			pstmt.setInt(11, documents_flg[4]);
 			pstmt.setInt(12, documents_flg[5]);
 			pstmt.setInt(13, document_application.getDestination());
-			pstmt.setInt(14, document_application.getTeacher_id());
+			row = pstmt.executeUpdate();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return row;
+	}
+
+	/** 会社宛に変更するのに使用
+	 *  @param document_application_id - 会社宛に変更したい届出書の届出書ID
+	 *  @return row - updateの行数
+	 */
+	public static int updateDestination(String document_application_id){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int row = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "update " + TABLE + " set destination = 0 where document_application_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, document_application_id);
 			row = pstmt.executeUpdate();
 		}catch(ClassNotFoundException e){
 			e.printStackTrace();
@@ -205,10 +244,10 @@ public class Document_ApplicationDAO {
 
 	/** 確認が必要な届出書数をカウントするためのもの
 	 *  @param bring_mailing - 持参か郵送かの振り分けのため
-	 * 	@param teacher_id - ログインしている教師の教師ID
+	 * 	@param student_id - 確認したい届出書を作成した生徒の学籍番号
 	 *  @return count - 確認が必要な届出書数
 	 */
-	public static int countDocument_ApplicationList(boolean bring_mailing, int teacher_id){
+	public static int countDocument_ApplicationList(boolean bring_mailing, int student_id){
 		Connection con = null;
 		PreparedStatement pstmt  = null;
 		ResultSet rs  = null;
@@ -217,10 +256,62 @@ public class Document_ApplicationDAO {
 		try{
 			Class.forName(CLASSNAME);
 			con = DriverManager.getConnection(URL,USER,PASSWORD);
-			String sql = "select count(document_application_id) as count from " + TABLE + " where bring_mailing = ? and teacher_id = ? and issue_flg = false";
+			String sql = "select count(document_application_id) as count from " + TABLE + " where bring_mailing = ? and student_id = ? and issue_flg = false";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setBoolean(1, bring_mailing);
-			pstmt.setInt(2, teacher_id);
+			pstmt.setInt(2, student_id);
+			rs = pstmt.executeQuery();
+			if(rs.next()){
+				count = rs.getInt("count");
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return count;
+	}
+
+	/** 確認が必要な届出書数をカウントするためのもの(就職課用)
+	 *  @param bring_mailing - 持参か郵送かの振り分けのため
+	 *  @return count - 確認が必要な届出書数
+	 */
+	public static int countDocument_ApplicationList(boolean bring_mailing){
+		Connection con = null;
+		PreparedStatement pstmt  = null;
+		ResultSet rs  = null;
+		int count = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select count(document_application_id) as count from " + TABLE + " where bring_mailing = ? and issue_flg = false";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setBoolean(1, bring_mailing);
 			rs = pstmt.executeQuery();
 			if(rs.next()){
 				count = rs.getInt("count");
@@ -259,10 +350,97 @@ public class Document_ApplicationDAO {
 
 	/** 確認が必要な届出書のリストを取得するためのもの
 	 *  @param bring_mailing - 持参か郵送かの振り分けのため
-	 * 	@param teacher_id - ログインしている教師の教師ID
+	 * 	@param student_id - 確認が必要な届出書を作成した生徒の学籍番号
 	 *  @return document_applicationList - 確認が必要な届出書のリスト
 	 */
-	public static ArrayList<Document_Application> getDocument_ApplicationList(boolean bring_mailing, int teacher_id){
+	public static ArrayList<Document_Application> getDocument_ApplicationList(boolean bring_mailing, int student_id){
+		Connection con = null;
+		PreparedStatement pstmt  = null;
+		ResultSet rs  = null;
+		ArrayList<Document_Application> document_applicationList = new ArrayList<Document_Application>();
+		String[] documents_name = {"resume_flg", "graduation_certificate_flg", "record_certificate_flg",
+				"health_certificate_flg", "nomination_form_flg", "other_flg"};
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select document_application_id, company_id, deadline, ";
+
+			for(int i = 0; i < documents_name.length; i++){
+				sql += documents_name[i] + ", ";
+			}
+
+			sql += "issue_fee";
+
+			if(!bring_mailing){	//郵送の場合
+				sql += ", destination";
+			}
+
+			sql += " from " + TABLE + " where bring_mailing = ? and student_id = ? and issue_flg = false";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setBoolean(1, bring_mailing);
+			pstmt.setInt(2, student_id);
+			rs = pstmt.executeQuery();
+			while(rs.next()){
+				String document_application_id = rs.getString("document_application_id");
+
+				String company_id = rs.getString("company_id");
+
+				LocalDate deadline = DateConversion.localDateConversion(rs.getDate("deadline"));
+
+				int[] documents_flg = new int[documents_name.length];
+				for(int i = 0; i < documents_name.length; i++){
+					documents_flg[i] = rs.getInt(documents_name[i]);
+				}
+
+				int issue_fee = rs.getInt("issue_fee");
+
+				int destination = -1;
+				if(!bring_mailing){	//郵送の場合
+					destination = rs.getInt("destination");
+				}
+				document_applicationList.add(new Document_Application(document_application_id, null,
+						student_id, company_id, bring_mailing, deadline, documents_flg, issue_fee, false,
+						destination));
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return document_applicationList;
+	}
+
+	/** 確認が必要な届出書のリストを取得するためのもの(就職課用)
+	 *  @param bring_mailing - 持参か郵送かの振り分けのため
+	 * 	@param student_id - 確認が必要な届出書を作成した生徒の学籍番号
+	 *  @return document_applicationList - 確認が必要な届出書のリスト
+	 */
+	public static ArrayList<Document_Application> getDocument_ApplicationList(boolean bring_mailing){
 		Connection con = null;
 		PreparedStatement pstmt  = null;
 		ResultSet rs  = null;
@@ -285,10 +463,9 @@ public class Document_ApplicationDAO {
 				sql += ", destination";
 			}
 
-			sql += " from " + TABLE + " where bring_mailing = ? and teacher_id = ? and issue_flg = false";
+			sql += " from " + TABLE + " where bring_mailing = ? and issue_flg = false";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setBoolean(1, bring_mailing);
-			pstmt.setInt(2, teacher_id);
 			rs = pstmt.executeQuery();
 			while(rs.next()){
 				String document_application_id = rs.getString("document_application_id");
@@ -312,7 +489,7 @@ public class Document_ApplicationDAO {
 				}
 				document_applicationList.add(new Document_Application(document_application_id, null,
 						student_id, company_id, bring_mailing, deadline, documents_flg, issue_fee, false,
-						destination, teacher_id));
+						destination));
 			}
 		}catch(ClassNotFoundException e){
 			e.printStackTrace();
@@ -505,11 +682,11 @@ public class Document_ApplicationDAO {
 		return list;
 	}
 
-	/** 届出書の教師IDをnullにするのに使用
-	 *  @param teacher_id - nullにする教師の教師ID
-	 *  @return row - updateの行数
+	/** 届出書データを削除するためのもの
+	 *  @param student_id - 削除する届出書データを作成した学生の学籍番号
+	 *  @return row - deleteの行数
 	 */
-	public static int clearTeacher_Id(int teacher_id){
+	public static int dropDocument_Application(int student_id){
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		int row = 0;
@@ -517,9 +694,9 @@ public class Document_ApplicationDAO {
 		try{
 			Class.forName(CLASSNAME);
 			con = DriverManager.getConnection(URL,USER,PASSWORD);
-			String sql = "update " + TABLE + " set teacher_id = null where teacher_id = ?";
+			String sql = "delete from " + TABLE + " where student_id = ?";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, teacher_id);
+			pstmt.setInt(1, student_id);
 			row = pstmt.executeUpdate();
 		}catch(ClassNotFoundException e){
 			e.printStackTrace();
@@ -545,11 +722,11 @@ public class Document_ApplicationDAO {
 		return row;
 	}
 
-	/** 届出書データを削除するためのもの
-	 *  @param student_id - 削除する届出書データを作成した学生の学籍番号
+	/** 作成したばかりの届出書データを削除するためのもの
+	 *  @param document_application_id - 削除する届出書の届出書ID
 	 *  @return row - deleteの行数
 	 */
-	public static int dropDocument_Application(int student_id){
+	public static int dropDocument_Application(String document_application_id){
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		int row = 0;
@@ -557,9 +734,9 @@ public class Document_ApplicationDAO {
 		try{
 			Class.forName(CLASSNAME);
 			con = DriverManager.getConnection(URL,USER,PASSWORD);
-			String sql = "delete from " + TABLE + " where student_id = ?";
+			String sql = "delete from " + TABLE + " where document_application_id = ?";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, student_id);
+			pstmt.setString(1, document_application_id);
 			row = pstmt.executeUpdate();
 		}catch(ClassNotFoundException e){
 			e.printStackTrace();

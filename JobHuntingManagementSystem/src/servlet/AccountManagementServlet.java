@@ -197,8 +197,6 @@ public class AccountManagementServlet extends HttpServlet {
 					for(String work : teacher_idList){
 						teacher_id = Integer.parseInt(work);
 
-						row = Document_ApplicationDAO.clearTeacher_Id(teacher_id);
-
 						row = Charge_ClassDAO.dropCharge_Class(teacher_id);
 
 						String user_id = TeacherDAO.searchUser_ID(teacher_id);

@@ -139,10 +139,8 @@ create table document_application(
   issue_fee int(4) as((graduation_certificate_flg + record_certificate_flg + health_certificate_flg + nomination_form_flg) * 100) not null,
   issue_flg boolean not null default false,
   destination int(1),
-  teacher_id int(2),
   foreign key (student_id) references student(student_id),
-  foreign key (company_id) references company(company_id),
-  foreign key (teacher_id) references teacher(teacher_id)
+  foreign key (company_id) references company(company_id)
 );
 
 create table destination(

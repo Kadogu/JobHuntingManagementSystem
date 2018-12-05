@@ -22,6 +22,8 @@
 
 				<p>入力された内容を確認するためには以下のリンクをクリックして下さい。</p>
 
+				<p>生徒に報告書のやり直しを指示する場合は「修正指示」ボタンをクリックして下さい。</p>
+
 				<form action="Report" method="post" name="report" target="_blank">
 					<input type="hidden" name="status" value="reading">
 					<input type="hidden" name="filename" value="<%= file_name %>">
@@ -33,6 +35,11 @@
 
 					<input type="hidden" name="status" value="check">
 					<input type="submit" value="確定">
+				</form>
+
+				<form action="Report" method="get">
+					<input type="hidden" name="status" value="instruction">
+					<input type="submit" value="修正指示">
 				</form>
 
 				<form action="Report" method="get">

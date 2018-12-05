@@ -1,5 +1,8 @@
 package servlet;
 
+import static bin.SendMail.*;
+import static dto.MailAccount.*;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ import dto.Company;
 import dto.Contents_Test;
 import dto.Occupations;
 import dto.PDF;
+import dto.Student;
 import dto.Teacher;
 import dto.Type_Of_Industry;
 
@@ -69,6 +73,8 @@ public class ReportServlet extends HttpServlet {
 			view += "reportRemake.jsp";	//作成を再開するデータ選択ページ
 		}else if("choice".equals(status)){	//報告書確認の場合
 			view += "choiceReportCheck.jsp";	//確認したい報告書選択ページ
+		}else if("instruction".equals(status)){	//修正指示の場合
+			view += "instructReportRemake.jsp";	//修正指示ページ
 		}else if("reading".equals(status)){	//報告書閲覧の場合
 			String category = (String)session.getAttribute("category");
 
@@ -124,19 +130,25 @@ public class ReportServlet extends HttpServlet {
 
 				if("search".equals(search)){	//検索された場合
 					String work = request.getParameter("student_id");
-					if(work != null && !work.equals("")){
+
+					if(work != null && !work.equals("")){	//null及び空白チェック
 						student_id = Integer.parseInt(work);
 					}
 					name = request.getParameter("name");
-					if("".equals(name)){
+
+					if("".equals(name)){	//検索値がない場合の処理
 						name = null;
 					}
+
 					work = request.getParameter("year");
-					if(work != null && !work.equals("")){
+
+					if(work != null && !work.equals("")){	//null及び空白チェック
 						year = Integer.parseInt(work);
 					}
+
 					company_name = request.getParameter("company_name");
-					if("".equals(company_name)){
+
+					if("".equals(company_name)){	//検索値がない場合の処理
 						company_name = null;
 					}
 
@@ -192,9 +204,9 @@ public class ReportServlet extends HttpServlet {
 
 				String pdf_id = null;
 
-				if(remake != null && "remake".equals(remake)){
+				if(remake != null && "remake".equals(remake)){	//続きから作成の場合
 					pdf_id = (String)session.getAttribute("pdf_id");
-				}else{
+				}else{	//新規作成の場合
 					pdf_id = CreateID.createID(8);
 
 					while(PDFDAO.searchPDF_Id(pdf_id) != null){
@@ -220,16 +232,17 @@ public class ReportServlet extends HttpServlet {
 				PDF pdf = new PDF(pdf_id, null, student_id, null, sorf, sfdate, company_id, type_of_industry, occupations, application_form, null, null, false, false, false);
 
 				int row = 0;
-				if("remake".equals(remake)){
+
+				if("remake".equals(remake)){	//続きから作成の場合
 					row = PDFDAO.updateReport1(pdf);
-				}else{
+				}else{	//新規作成の場合
 					row = PDFDAO.addReport1(pdf);
 				}
 
 				if(row >= 1){	//格納成功の場合
 					session.setAttribute("pdf_id", pdf_id);
 
-					view += "report2.jsp";
+					view += "report2.jsp";	//報告書2/3ページ
 				}else{	//格納失敗の場合
 					view += "error.jsp";	//エラーページ
 				}
@@ -242,31 +255,31 @@ public class ReportServlet extends HttpServlet {
 				for(int n = 1; n <= 3; n++){
 					String work = request.getParameter("start_date" + n);
 					LocalDate start_date = null;
-					if(work != null && !work.equals("")){
+					if(work != null && !work.equals("")){	//null及び空白チェック
 						start_date = DateConversion.input_dateConversion(work);
 					}
 
 					work = request.getParameter("start_hour" + n);
 					int start_hour = -1;
-					if(work != null && !work.equals("")){
+					if(work != null && !work.equals("")){	//null及び空白チェック
 						start_hour = Integer.parseInt(work);
 					}
 
 					work = request.getParameter("start_minute" + n);
 					int start_minute = -1;
-					if(work != null && !work.equals("")){
+					if(work != null && !work.equals("")){	//null及び空白チェック
 						start_minute = Integer.parseInt(work);
 					}
 
 					work = request.getParameter("last_hour" + n);
 					int last_hour = -1;
-					if(work != null && !work.equals("")){
+					if(work != null && !work.equals("")){	//null及び空白チェック
 						last_hour = Integer.parseInt(work);
 					}
 
 					work = request.getParameter("last_minute" + n);
 					int last_minute = -1;
-					if(work != null && !work.equals("")){
+					if(work != null && !work.equals("")){	//null及び空白チェック
 						last_minute = Integer.parseInt(work);
 					}
 
@@ -280,7 +293,7 @@ public class ReportServlet extends HttpServlet {
 					int groop_no = 0;
 					int discussion_no = 0;
 
-					if(test_categoryList != null && "writing".equals(test_categoryList[idx])){
+					if(test_categoryList != null && "writing".equals(test_categoryList[idx])){	//筆記試験の場合
 						idx++;
 
 						test_category += "筆記";
@@ -288,45 +301,45 @@ public class ReportServlet extends HttpServlet {
 						String[] writingList = request.getParameterValues("writing" + n);
 						StringBuilder sb = new StringBuilder();
 						for(int i = 0; i < writingList.length; i++){
-							if("other".equals(writingList[i])){
+							if("other".equals(writingList[i])){	//その他にチェックが入っていた場合
 								sb.append(",その他(" + request.getParameter("other" + n) + ")");
-							}else{
+							}else{	//それ以外の場合
 								sb.append("," + writingList[i]);
 							}
 						}
 						writing = sb.substring(1, sb.length());
 					}
 
-					if(test_categoryList != null && idx < test_categoryList.length && "interview".equals(test_categoryList[idx])){
-						if(idx == 1){
+					if(test_categoryList != null && idx < test_categoryList.length && "interview".equals(test_categoryList[idx])){	//面接試験の場合
+						if(idx == 1){	//筆記試験も選ばれていた場合
 							test_category += ",";
 						}
 						test_category += "面接";
 
 						work = request.getParameter("view_time" + n);
-						if(work != null && !work.equals("")){
+						if(work != null && !work.equals("")){	//null及び空白チェック
 							view_time = Integer.parseInt(work);
 						}
 
 						work = request.getParameter("viewer_no" + n);
-						if(work != null && !work.equals("")){
+						if(work != null && !work.equals("")){	//null及び空白チェック
 							viewer_no = Integer.parseInt(work);
 						}
 
 						view_content = request.getParameter("view_content" + n);
 
-						if("groop_interview".equals(view_content)){
+						if("groop_interview".equals(view_content)){	//集団面接が選ばれている場合
 							view_content = "集団面接";
 
 							work = request.getParameter("groop_no" + n);
-							if(work != null && !work.equals("")){
+							if(work != null && !work.equals("")){	//null及び空白チェック
 								groop_no = Integer.parseInt(work);
 							}
-						}else if("groop_discussion".equals(view_content)){
+						}else if("groop_discussion".equals(view_content)){	//グループディスカッションが選ばれている場合
 							view_content = "グループディスカッション";
 
 							work = request.getParameter("discussion_no" + n);
-							if(work != null && !work.equals("")){
+							if(work != null && !work.equals("")){	//null及び空白チェック
 								discussion_no = Integer.parseInt(work);
 							}
 						}
@@ -338,24 +351,24 @@ public class ReportServlet extends HttpServlet {
 							last_hour, last_minute, test_category, writing, viewer_no, view_time, view_content,
 							groop_no, discussion_no);
 
-					if("remake".equals(remake)){
+					if("remake".equals(remake)){	//続きから作成の場合
 						contents_test_id = Contents_TestDAO.getContents_Test_Id(pdf_id, n);
 
-						if(contents_test_id == 0){
+						if(contents_test_id == 0){	//まだデータが格納されていなかった場合
 							row += Contents_TestDAO.addContents_Test(contents_test);
-						}else{
+						}else{	//データが格納されていた場合
 							contents_test.setContents_test_id(contents_test_id);
 							row += Contents_TestDAO.updateContents_Test(contents_test);
 						}
-					}else{
+					}else{	//新規作成の場合
 						row += Contents_TestDAO.addContents_Test(contents_test);
 					}
 
 				}
 				if(row >= 3){	//格納成功の場合
-					view += "report3.jsp";
+					view += "report3.jsp";	//報告書3/3ページ
 				}else{
-					view += "error.jsp";
+					view += "error.jsp";	//エラーページ
 				}
 			}else if("3".equals(report)){	//報告書3/3からの遷移の場合
 				PDF pdf = new PDF();
@@ -403,7 +416,7 @@ public class ReportServlet extends HttpServlet {
 				}else{	//格納失敗の場合
 					view += "error.jsp";	//エラーページ
 				}
-			}else{
+			}else{	//正常な遷移ではない場合
 				view += "top.jsp";	//トップページ
 			}
 		}else if("remake".equals(status)){	//続きから作成の場合
@@ -508,7 +521,57 @@ public class ReportServlet extends HttpServlet {
 			}else{	//それ以外の場合
 				view += "error.jsp";	//エラーページ
 			}
-		}else if("reading".equals(status)){
+		}else if("send_mail".equals(status)){	//やり直しの通知メール送信の場合
+			String title = "報告書の修正指示通知";
+
+			StringBuilder sb = new StringBuilder();
+
+			int teacher_id = (int)session.getAttribute("teacher_id");
+			Teacher teacher = TeacherDAO.getTeacher(teacher_id);
+
+			String pdf_id = (String)session.getAttribute("pdf_id");
+
+			String company_id = PDFDAO.getCompany_Id(pdf_id);
+			String company_name = CompanyDAO.getCompany_name(company_id);
+
+			int student_id = PDFDAO.getStudent_Id(pdf_id);
+			Student student = StudentDAO.searchStudent(student_id);
+
+			sb.append(getAccountName() + "です。\n\n");
+
+			sb.append("あなたが作成していた" + company_name + "の報告書の修正指示が" + teacher.getName() + "先生から出ています。\n\n");
+
+			sb.append("以下の修正指示を確認して速やかに修正した後、再度提出して下さい。\n\n");
+
+			sb.append("先生の入力した内容をそのまま表示します。\n\n");
+
+			String message = request.getParameter("message");
+			sb.append(message + "\n\n");
+
+			sb.append("以上が" + teacher.getName() + "先生の入力された内容です。\n\n");
+
+			sb.append(getFooter());
+
+			message = sb.toString();
+
+			String receiverMail_Address = student.getMail_address();
+
+			String receiverName = student.getName();
+
+			boolean flg = sendMail(title, message, receiverMail_Address, receiverName);
+
+			if(flg){	//メールの送信に成功した場合
+				int row = PDFDAO.remakeReport(pdf_id);
+
+				if(row >= 1){	//やり直し処理に成功した場合
+					view += "reportRemakeNotificationCompletion.jsp";	//修正指示通知完了ページ
+				}else{	//やり直し処理に失敗した場合
+					view += "error.jsp";	//エラーページ
+				}
+			}else{	//メールの送信に失敗した場合
+				view += "error.jsp";	//エラーページ
+			}
+		}else if("reading".equals(status)){	//PDFファイルを開く場合
 			String filename = request.getParameter("filename");
 			request.setAttribute("filename", filename);
 
