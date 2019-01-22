@@ -12,6 +12,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>修正指示通知完了 | モリジョビ就活管理システム</title>
+	<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 	<%
@@ -35,31 +36,32 @@
 			}
 		}
 	%>
-		<div>
-			<div>
+		<div class="logout">
+			<div class="right m-r30">
 				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
+		</div>
 
-			<div>
-				<h1>修正指示通知完了</h1>
+		<div class="main">
+			<h1 class="m-b30">修正指示通知完了</h1>
 
-				<p>生徒に通知が完了しました。</p>
+			<p>生徒に通知が完了しました。</p><br>
 
-			<%	if(count > 0){	%>
-					<p>続けて報告書の確認を行う場合は「確認」ボタンをクリックして下さい。</p>
-			<%	}	%>
+		<%	if(count > 0){	%>
+				<p>続けて報告書の確認を行う場合は<br>
+				「確認」ボタンをクリックして下さい。</p><br>
+		<%	}	%>
 
-				<form action="Report" method="get">
-					<input type="hidden" name="status" value="choice">
-					<input type="submit" value="確認<%= count %>件">
-				</form>
+			<form action="Main" method="get">
+					<input type="submit" value="メインページへ" class="m-b30 m-r80">
+			</form>
 
-				<form action="Main" method="get">
-						<input type="submit" value="メインページへ">
-				</form>
-			</div>
+			<form action="Report" method="get">
+				<input type="hidden" name="status" value="choice">
+				<input type="submit" value="確認<%= count %>件" class="m-b30">
+			</form>
 		</div>
 	</body>
 </html>

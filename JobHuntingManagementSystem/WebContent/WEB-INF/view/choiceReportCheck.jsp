@@ -13,6 +13,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>報告書選択 | モリジョビ就活管理システム</title>
+	<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 	<%
@@ -39,44 +40,44 @@
 			}
 		}
 	%>
-		<div>
-			<div>
+		<div class="logout">
+			<div class="right m-r30">
 				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
+		</div>
 
-			<div>
-				<h1>確認したい報告書を選択</h1>
+		<div class="main">
+			<h1 class="m-b30">確認したい報告書を選択</h1>
 
-			<%
-				if(createdReportList.size() == 1){
-					PDF report = createdReportList.get(0);
-			%>
+		<%
+			if(createdReportList.size() == 1){
+				PDF report = createdReportList.get(0);
+		%>
+				<form action="Report" method="post" name="report">
+					<input type="hidden" name="status" value="choice">
+					<input type="hidden" name="pdf_id" value="<%= report.getPdf_id() %>">
+					<a href="javascript:report.submit()"><%= report.getFile_name() %></a>
+				</form><br><br>
+		<%
+			}else{
+				for(int i = 0; i < createdReportList.size(); i++){
+					PDF report = createdReportList.get(i);
+		%>
 					<form action="Report" method="post" name="report">
 						<input type="hidden" name="status" value="choice">
 						<input type="hidden" name="pdf_id" value="<%= report.getPdf_id() %>">
-						<a href="javascript:report.submit()"><%= report.getFile_name() %></a>
-					</form>
-			<%
-				}else{
-					for(int i = 0; i < createdReportList.size(); i++){
-						PDF report = createdReportList.get(i);
-			%>
-						<form action="Report" method="post" name="report">
-							<input type="hidden" name="status" value="choice">
-							<input type="hidden" name="pdf_id" value="<%= report.getPdf_id() %>">
-							<a href="javascript:report[<%= i %>].submit()"><%= report.getFile_name() %></a>
-						</form>
-			<%
-					}
+						<a href="javascript:report[<%= i %>].submit()"><%= report.getFile_name() %></a>
+					</form><br><br>
+		<%
 				}
-			%>
+			}
+		%>
 
-				<form action="Main" method="get">
-					<input type="submit" value="キャンセル">
-				</form>
-			</div>
+			<form action="Main" method="get">
+				<input type="submit" value="キャンセル" class="m-b30">
+			</form>
 		</div>
 	</body>
 </html>

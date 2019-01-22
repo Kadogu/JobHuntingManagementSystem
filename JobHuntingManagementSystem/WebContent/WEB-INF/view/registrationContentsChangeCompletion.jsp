@@ -5,12 +5,13 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>登録内容変更完了 | モリジョビ就活管理システム</title>
+	<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
-		<div>
-			<h1>登録内容変更完了</h1>
+		<div class="main">
+			<h1 class="m-t50 m-b30">登録内容変更完了</h1>
 
-			<p>登録されていた内容の変更が完了しました。</p>
+			<p class="m-b30">登録されていた内容の変更が完了しました。</p>
 
 			<form action="Main" method="get">
 				<input type="submit" value="メインページへ">

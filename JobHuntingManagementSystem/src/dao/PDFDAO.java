@@ -13,8 +13,11 @@ import bin.DateConversion;
 import dto.PDF;
 
 public class PDFDAO {
+//	private static final String HOST = "localhost";
+	private static final String HOST = "10.0.3.10";
+
 	private static final String CLASSNAME = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://localhost:3306/gradwork?useSSL=false";
+	private static final String URL = "jdbc:mysql://" + HOST + ":3306/gradwork?useSSL=false";
 	private static final String USER = "jyobi";
 	private static final String PASSWORD = "jyobijyobi";
 
@@ -835,6 +838,48 @@ public class PDFDAO {
 		return row;
 	}
 
+	/** PDF追加完了時に報告書の提出日を更新するために使用
+	 * 	@param pdf_id - 提出日を更新したい報告書の報告書ID
+	 * 	@param filing_date - 更新する提出日
+	 *  @return row - updateした結果の行数
+	 */
+	public static int updateFiling_Date(String pdf_id, LocalDate filing_date){
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int row = 0;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "update " + TABLE + " set filing_date = ? where pdf_id = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setDate(1, DateConversion.dateConversion(filing_date));
+			pstmt.setString(2, pdf_id);
+			row = pstmt.executeUpdate();
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return row;
+	}
+
 	/** 報告書確認が済んでtc_flgかedc_flgを立てるためのもの
 	 * 	@param pdf_id - 確認が済んだ報告書の報告書ID
 	 *  @param belongs_id - 教師の所属ID
@@ -1041,6 +1086,58 @@ public class PDFDAO {
 		return file_name;
 	}
 
+	/** 同一のファイル名が存在するか確認したい場合に使用
+	 *  @param file_name - 同一のファイル名が存在するか確認したいファイル名
+	 *  @return pdf_id - ファイル名と紐づいている報告書の報告書ID {@code null} ファイル名が存在しない場合
+	 */
+	public static String searchFile_name(String file_name){
+		Connection con = null;
+		PreparedStatement pstmt  = null;
+		ResultSet rs  = null;
+		String pdf_id = null;
+
+		try{
+			Class.forName(CLASSNAME);
+			con = DriverManager.getConnection(URL,USER,PASSWORD);
+			String sql = "select pdf_id from " + TABLE + " where file_name = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, file_name);
+			rs = pstmt.executeQuery();
+			if(rs.next()){
+				pdf_id = rs.getString("pdf_id");
+			}
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(pstmt != null){
+					pstmt.close();
+				}
+			}catch(SQLException e){
+
+			}
+
+			try{
+				if(con != null){
+					con.close();
+				}
+			}catch(SQLException e){
+
+			}
+		}
+		return pdf_id;
+	}
+
 	/** 生徒閲覧時に報告書のファイル名リストを取得するためのもの
 	 *  @param year - 年度の検索値
 	 *  @param company_name - 会社名の検索値
@@ -1064,7 +1161,7 @@ public class PDFDAO {
 				sql += " and filing_date >= ? and filing_date <= ?";
 			}
 
-			sql += " and cc_flg = true and tc_flg = true and edc_flg = true";
+			sql += " and cc_flg = true and tc_flg = true and edc_flg = true order by filing_date desc";
 			pstmt = con.prepareStatement(sql);
 
 			if(year != 0){	//年度が指定されていた場合
@@ -1124,7 +1221,7 @@ public class PDFDAO {
 			Class.forName(CLASSNAME);
 			con = DriverManager.getConnection(URL,USER,PASSWORD);
 			String sql = "select file_name from " + TABLE + " where student_id = ? "
-					+ "and cc_flg = true and tc_flg = true and edc_flg = true";
+					+ "and cc_flg = true and tc_flg = true and edc_flg = true order by filing_date desc";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, student_id);
 			rs = pstmt.executeQuery();
@@ -1188,7 +1285,7 @@ public class PDFDAO {
 				sql += " and filing_date >= ? and filing_date <= ?";
 			}
 
-			sql += " and cc_flg = true and tc_flg = true and edc_flg = true";
+			sql += " and cc_flg = true and tc_flg = true and edc_flg = true order by filing_date desc";
 			pstmt = con.prepareStatement(sql);
 
 			if(year != 0){	//年度が指定されていた場合

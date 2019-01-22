@@ -18,6 +18,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>届出書確認 | モリジョビ就活管理システム</title>
+	<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 	<%
@@ -57,101 +58,101 @@
 		String[] documents = (String[])request.getAttribute("documents");
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM月dd日");
 	%>
-		<div>
-			<div>
+		<div class="logout">
+			<div class="right m-r30">
 				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
+		</div>
 
-			<div>
-				<h1>届出書確認(<%= title %>)</h1>
+		<div class="main">
+			<h1 class="m-b30">届出書確認(<%= title %>)</h1>
 
-				<form action="ApplicationForm" method="post">
-					<table>
-						<tr>
-							<th><%= column %></th>
-							<th>締切日</th>
-							<th>申請書類</th>
-							<th>会社名</th>
+			<table>
+				<tr>
+					<th><%= column %></th>
+					<th>締切日</th>
+					<th>申請書類</th>
+					<th>会社名</th>
 
-						<%	if(!bring_mailing){	%>
-								<th>郵便番号</th>
-								<th>住所</th>
-								<th>個人名</th>
-						<%	}	%>
+				<%	if(!bring_mailing){	%>
+						<th>郵便番号</th>
+						<th>住所</th>
+						<th>個人名</th>
+				<%	}	%>
 
-							<th>申請者</th>
-							<th>学籍番号</th>
-							<th>発行手数料</th>
-						</tr>
+					<th>申請者</th>
+					<th>学籍番号</th>
+					<th>発行手数料</th>
+				</tr>
+			<%
+				for(Document_Application d_aList : document_applicationList){
+					String d_a_id = d_aList.getDocument_application_id();
+			%>
+					<tr>
+						<td><input type="checkbox" form="notification" name="document_application_id" value="<%= d_a_id %>" id="<%= d_a_id %>"></td>
+						<td><label for="<%= d_a_id %>" class="not"><%= d_aList.getDeadline().format(formatter) %></label></td>
+
 					<%
-						for(Document_Application d_aList : document_applicationList){
-							String d_a_id = d_aList.getDocument_application_id();
+						int[] documents_flg = d_aList.getDocuments_flg();
+						StringBuilder sb = new StringBuilder();
+						for(int i = 0; i < documents.length - 1; i++){
+							if(documents_flg[i] == 1){	//チェックが入っていた場合
+								sb.append("," + documents[i]);
+							}
+						}
+						if(documents_flg[documents.length - 1] == 1){	//その他にチェックが入っていた場合
+							sb.append("," + Document_Other_ContentsDAO.getContents(d_a_id));
+						}
 					%>
-							<tr>
-								<td><input type="checkbox" name="document_application_id" value="<%= d_a_id %>" id="<%= d_a_id %>"></td>
-								<td><label for="<%= d_a_id %>"><%= d_aList.getDeadline().format(formatter) %></label></td>
+						<td><label for="<%= d_a_id %>" class="not"><%= sb.substring(1, sb.length()) %></label></td>
+						<td><label for="<%= d_a_id %>" class="not"><%= CompanyDAO.getCompany_name(d_aList.getCompany_id()) %></label></td>
 
-							<%
-								int[] documents_flg = d_aList.getDocuments_flg();
-								StringBuilder sb = new StringBuilder();
-								for(int i = 0; i < documents.length - 1; i++){
-									if(documents_flg[i] == 1){	//チェックが入っていた場合
-										sb.append("," + documents[i]);
-									}
+					<%
+						if(!bring_mailing){	//郵送の場合
+							Destination destination = DestinationDAO.getDestination(d_a_id);
+							String postal_code = "-";
+							String address = "-";
+							String individual = "-";
+							if(destination != null){	//データを取得できた場合
+								String work = destination.getPostal_code();
+								if(work != null){	//データがあった場合
+									postal_code = work;
 								}
-								if(documents_flg[documents.length - 1] == 1){	//その他にチェックが入っていた場合
-									sb.append("," + Document_Other_ContentsDAO.getContents(d_a_id));
+								work = destination.getAddress();
+								if(work != null){	//データがあった場合
+									address = work;
 								}
-							%>
-								<td><label for="<%= d_a_id %>"><%= sb.substring(1, sb.length()) %></label></td>
-								<td><label for="<%= d_a_id %>"><%= CompanyDAO.getCompany_name(d_aList.getCompany_id()) %></label></td>
-
-							<%
-								if(!bring_mailing){	//郵送の場合
-									Destination destination = DestinationDAO.getDestination(d_a_id);
-									String postal_code = "-";
-									String address = "-";
-									String individual = "-";
-									if(destination != null){	//データを取得できた場合
-										String work = destination.getPostal_code();
-										if(work != null){	//データがあった場合
-											postal_code = work;
-										}
-										work = destination.getAddress();
-										if(work != null){	//データがあった場合
-											address = work;
-										}
-										work = destination.getIndividual();
-										if(work != null){	//データがあった場合
-											individual = work;
-										}
-									}
-							%>
-									<td><label for="<%= d_a_id %>"><%= postal_code %></label></td>
-									<td><label for="<%= d_a_id %>"><%= address %></label></td>
-									<td><label for="<%= d_a_id %>"><%= individual %></label></td>
-							<%
+								work = destination.getIndividual();
+								if(work != null){	//データがあった場合
+									individual = work;
 								}
-								int student_id = d_aList.getStudent_id();
-							%>
-								<td><label for="<%= d_a_id %>"><%= StudentDAO.getName(student_id) %></label></td>
-								<td><label for="<%= d_a_id %>"><%= student_id %></label></td>
-								<td><label for="<%= d_a_id %>"><%= d_aList.getIssue_fee() %>円</label></td>
-							</tr>
-					<%	}	%>
-					</table>
+							}
+					%>
+							<td><label for="<%= d_a_id %>" class="not"><%= postal_code %></label></td>
+							<td><label for="<%= d_a_id %>" class="not"><%= address %></label></td>
+							<td><label for="<%= d_a_id %>" class="not"><%= individual %></label></td>
+					<%
+						}
+						int student_id = d_aList.getStudent_id();
+					%>
+						<td><label for="<%= d_a_id %>" class="not"><%= StudentDAO.getName(student_id) %></label></td>
+						<td><label for="<%= d_a_id %>" class="not"><%= student_id %></label></td>
+						<td><label for="<%= d_a_id %>" class="not"><%= d_aList.getIssue_fee() %>円</label></td>
+					</tr>
+			<%	}	%>
+			</table>
 
-					<input type="hidden" name="bring_mailing" value="<%= bring_mailing %>">
-					<input type="hidden" name="status" value="notification">
-					<input type="submit" value="通知">
-				</form>
+			<form action="Main" method="get">
+				<input type="submit" value="キャンセル"  class="m-t30 m-b30 m-r80">
+			</form>
 
-				<form action="Main" method="get">
-					<input type="submit" value="キャンセル">
-				</form>
-			</div>
+			<form action="ApplicationForm" method="post" id="notification">
+            	<input type="hidden" name="bring_mailing" value="<%= bring_mailing %>">
+            	<input type="hidden" name="status" value="notification">
+           		<input type="submit" value="通知" class="m-t30 m-b30">
+            </form>
 		</div>
 	</body>
 </html>

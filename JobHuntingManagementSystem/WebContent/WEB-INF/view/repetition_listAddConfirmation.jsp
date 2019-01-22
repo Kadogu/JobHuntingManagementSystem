@@ -8,6 +8,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>留年リスト追加確認 | モリジョビ就活管理システム</title>
+	<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 	<%
@@ -30,30 +31,30 @@
 
 		String message = student_id + "　" + name + "　" + department_name + "科　" + course_name + "コース　" + school_year + "年";
 	%>
-		<div>
-			<div>
+		<div class="logout">
+			<div class="right m-r30">
 				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
+		</div>
 
-			<div>
-				<h1>留年リスト追加確認</h1>
+		<div class="main">
+			<h1 class="m-b30">留年リスト追加確認</h1>
 
-				<p><%= message %></p>
+			<p><%= message %></p><br>
 
-				<p>上記の学生を追加しますがよろしいですか？</p>
+			<p>上記の学生を追加しますがよろしいですか？</p>
 
-				<form action="Repetition_List" method="get">
-					<input type="hidden" name="status" value="addConfirmation">
-					<input type="submit" value="OK">
-				</form>
+			<form action="Repetition_List" method="get">
+				<input type="hidden" name="status" value="add">
+				<input type="submit" value="キャンセル" class="m-t30 m-r80">
+			</form>
 
-				<form action="Repetition_List" method="get">
-					<input type="hidden" name="status" value="add">
-					<input type="submit" value="キャンセル">
-				</form>
-			</div>
+			<form action="Repetition_List" method="get">
+				<input type="hidden" name="status" value="addConfirmation">
+				<input type="submit" value="OK" class="m-t30">
+			</form>
 		</div>
 	</body>
 </html>

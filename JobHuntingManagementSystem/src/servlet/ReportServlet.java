@@ -391,6 +391,18 @@ public class ReportServlet extends HttpServlet {
 					String name = StudentDAO.getName(student_id);
 
 					String file_name = company_name + "_" + student_id + "_" + name;
+
+					int length = file_name.length();
+					int num = 1;
+					String work = PDFDAO.searchFile_name(file_name);
+					while(work != null){
+						if(pdf_id.equals(work)){	//検索したファイル名を作成している報告書が使っていた場合
+							break;
+						}else{	//検索したファイル名を他の報告書が使っていた場合
+							file_name = file_name.substring(0, length) + "(" + num++ +  ")";
+							work = PDFDAO.searchFile_name(file_name);
+						}
+					}
 					pdf.setFile_name(file_name);
 
 					LocalDate filing_date = LocalDate.now();
@@ -408,6 +420,7 @@ public class ReportServlet extends HttpServlet {
 						if(flg){	//PDF化成功の場合
 							view += "reportCreateConfirmation.jsp";	//報告書作成確認ページ
 						}else{	////PDF化失敗の場合
+							request.setAttribute("e", flg);
 							view += "error.jsp";	//エラーページ
 						}
 					}else{	//報告書確認用データ格納失敗の場合
@@ -452,6 +465,18 @@ public class ReportServlet extends HttpServlet {
 			String name = StudentDAO.getName(student_id);
 
 			String file_name = company_name + "_" + student_id + "_" + name;
+
+			int length = file_name.length();
+			int num = 1;
+			String work = PDFDAO.searchFile_name(file_name);
+			while(work != null){
+				if(pdf_id.equals(work)){	//検索したファイル名を作成している報告書が使っていた場合
+					break;
+				}else{	//検索したファイル名を他の報告書が使っていた場合
+					file_name = file_name.substring(0, length) + "(" + num++ +  ")";
+					work = PDFDAO.searchFile_name(file_name);
+				}
+			}
 			pdf.setFile_name(file_name);
 
 			LocalDate filing_date = LocalDate.now();
@@ -503,13 +528,20 @@ public class ReportServlet extends HttpServlet {
 					boolean[] flgs = PDFDAO.getFlgs(pdf_id);
 
 					if(flgs[0] && flgs[1]){	//報告書がPDFを作成できる状態になっている場合
-						String jasperPath = request.getServletContext().getRealPath("jasper/report.jrxml");
-						String pdfPath = request.getServletContext().getRealPath("pdf/");
-						boolean flg = CreatePDF.createPDF(pdf_id, jasperPath, pdfPath);
+						LocalDate filing_date = LocalDate.now();
+						row = PDFDAO.updateFiling_Date(pdf_id, filing_date);
 
-						if(flg){	//PDF作成成功の場合
-							view += "pdfCreateCompletion.jsp";	//PDF作成完了ページ
-						}else{	//PDF作成失敗の場合
+						if(row >= 1){	//提出日の更新に成功した場合
+							String jasperPath = request.getServletContext().getRealPath("jasper/report.jrxml");
+							String pdfPath = request.getServletContext().getRealPath("pdf/");
+							boolean flg = CreatePDF.createPDF(pdf_id, jasperPath, pdfPath);
+
+							if(flg){	//PDF作成成功の場合
+								view += "pdfAddCompletion.jsp";	//PDF追加完了ページ
+							}else{	//PDF作成失敗の場合
+								view += "error.jsp";	//エラーページ
+							}
+						}else{	//提出日の更新に失敗した場合
 							view += "error.jsp";	//エラーページ
 						}
 					}else{	//片方だけ確認が終わった場合

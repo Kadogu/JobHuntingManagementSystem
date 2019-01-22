@@ -10,8 +10,11 @@ import java.util.ArrayList;
 import dto.Student;
 
 public class StudentDAO {
+//	private static final String HOST = "localhost";
+	private static final String HOST = "10.0.3.10";
+
 	private static final String CLASSNAME = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://localhost:3306/gradwork?useSSL=false";
+	private static final String URL = "jdbc:mysql://" + HOST + ":3306/gradwork?useSSL=false";
 	private static final String USER = "jyobi";
 	private static final String PASSWORD = "jyobijyobi";
 

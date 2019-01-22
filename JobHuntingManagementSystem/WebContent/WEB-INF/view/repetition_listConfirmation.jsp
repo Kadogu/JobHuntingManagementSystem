@@ -13,6 +13,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>留年リスト確認 | モリジョビ就活管理システム</title>
+	<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 	<%
@@ -46,9 +47,9 @@
 		HashMap<String, String> departmentMap = DepartmentDAO.getDepartmentMap();
 		HashMap<String, String> courseMap = CourseDAO.getCourseMap();
 	%>
-		<div>
+		<div class="logout">
 		<%	if(now.isAfter(year)){	%>
-				<div>
+				<div class="left m-l30">
 					<form action="Repetition_List" method="get">
 						<input type="hidden" name="status" value="pass">
 						<input type="submit" value="進級">
@@ -56,59 +57,59 @@
 				</div>
 		<%	}	%>
 
-			<div>
+			<div class="right m-r30">
 				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
+		</div>
 
-			<div>
-				<h1>留年リスト</h1>
+		<div class="main">
+			<h1 class="m-b10">留年リスト</h1>
 
-			<%	if(delete != null){	%>
-					<p><%= delete %></p>
-			<%	}	%>
+		<%	if(delete != null){	%>
+				<p class="m-b10"><span><%= delete %></span></p>
+		<%	}	%>
 
-				<table>
+			<table>
+				<tr>
+					<th></th>
+					<th>学籍番号</th>
+					<th>氏名</th>
+					<th>学科</th>
+					<th>コース</th>
+					<th>学年</th>
+				</tr>
+			<%
+				for(Student student : studentList){
+					int student_id = student.getStudent_id();
+					String course_id = student.getCourse_id();
+					String department_id = CourseDAO.getDepartment_Id(course_id);
+			%>
 					<tr>
-						<th>／</th>
-						<th>学籍番号</th>
-						<th>氏名</th>
-						<th>学科</th>
-						<th>コース</th>
-						<th>学年</th>
+						<td><input type="checkbox" name="delete" value="<%= student_id %>" id="<%= student_id %>" form="delete"></td>
+						<td><label class="not" for="<%= student_id %>"><%= student_id %></label></td>
+						<td><label class="not" for="<%= student_id %>"><%= student.getName() %></label></td>
+						<td><label class="not" for="<%= student_id %>"><%= departmentMap.get(department_id) %></label></td>
+						<td><label class="not" for="<%= student_id %>"><%= courseMap.get(course_id) %></label></td>
+						<td><label class="not" for="<%= student_id %>"><%= student.getSchool_year() %></label></td>
 					</tr>
-				<%
-					for(Student student : studentList){
-						int student_id = student.getStudent_id();
-						String course_id = student.getCourse_id();
-						String department_id = CourseDAO.getDepartment_Id(course_id);
-				%>
-						<tr>
-							<td><input type="checkbox" name="delete" value="<%= student_id %>" id="<%= student_id %>" form="delete"></td>
-							<td><label for="<%= student_id %>"><%= student_id %></label></td>
-							<td><label for="<%= student_id %>"><%= student.getName() %></label></td>
-							<td><label for="<%= student_id %>"><%= departmentMap.get(department_id) %></label></td>
-							<td><label for="<%= student_id %>"><%= courseMap.get(course_id) %></label></td>
-							<td><label for="<%= student_id %>"><%= student.getSchool_year() %></label></td>
-						</tr>
-				<%	}	%>
-				</table>
+			<%	}	%>
+			</table>
 
-				<form action="Repetition_List" method="get">
-					<input type="hidden" name="status" value="add">
-					<input type="submit" value="追加">
-				</form>
+			<form action="Main" method="get">
+				<input type="submit" value="メインページへ" class="m-t30 m-r80">
+			</form>
 
-				<form action="Repetition_List" method="post" id="delete">
-					<input type="hidden" name="status" value="delete">
-					<input type="submit" value="削除">
-				</form>
+			<form action="Repetition_List" method="post" id="delete">
+				<input type="hidden" name="status" value="delete">
+				<input type="submit" value="削除" class="m-t30 m-r80">
+			</form>
 
-				<form action="Main" method="get">
-					<input type="submit" value="メインページへ">
-				</form>
-			</div>
+			<form action="Repetition_List" method="get">
+				<input type="hidden" name="status" value="add">
+				<input type="submit" value="追加" class="m-t30">
+			</form>
 		</div>
 	</body>
 </html>

@@ -198,17 +198,16 @@ public class CreatePDF {
 	          // PDFファイル作成
 	          String file_name = PDFDAO.getFile_name(pdf_id);
 	          File pdf = new File(pdfPath + file_name + ".pdf");
+	          pdf.setWritable(true, false);
 
 	          // PDF出力
 	          JasperExportManager.exportReportToPdfFile(print,  pdf.getAbsolutePath());
 
 	          return true;
 		     }else{
-		    	 System.out.println("jrxmlファイルが見つかりませんでした。");
 		    	 return false;
 	    	 }
 	     } catch (Exception e) {
-	          e.printStackTrace();
 	          return false;
 	     }
 	}

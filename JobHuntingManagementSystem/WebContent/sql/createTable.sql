@@ -30,7 +30,7 @@ create table course(
 create table student(
   student_id int(7) primary key,
   name text,
-  mail_address varchar(256) unique,
+  mail_address varchar(255) unique,
   school_year int(1) not null default 1,
   course_id char(5) not null,
   graduation_flg boolean not null default false,
@@ -48,7 +48,7 @@ create table teacher(
   teacher_id int(2) primary key auto_increment,
   name text not null,
   belongs_id char(1) not null,
-  mail_address varchar(256) not null unique,
+  mail_address varchar(255) not null unique,
   admin_flg boolean not null default false,
   user_id char(16) not null,
   foreign key (belongs_id) references belongs(belongs_id),

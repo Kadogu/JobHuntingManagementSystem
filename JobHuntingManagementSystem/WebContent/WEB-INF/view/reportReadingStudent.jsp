@@ -8,6 +8,7 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>報告書一覧 | モリジョビ就活管理システム</title>
+	<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 	<%
@@ -25,9 +26,9 @@
 
 		ArrayList<String> file_nameList = Cast.autoCast(request.getAttribute("file_nameList"));
 	%>
-		<div>
+		<div class="logout">
 		<%	if(!"myreport".equals(myreport)){	%>
-				<div>
+				<div class="left m-l30">
 					<form action="Report" method="get">
 						<input type="hidden" name="status" value="reading">
 						<input type="hidden" name="myreport" value="myreport">
@@ -36,101 +37,103 @@
 				</div>
 		<%	}	%>
 
-			<div>
+			<div class="right m-r30">
 				<form action="Main" method="post">
 					<input type="submit" value="ログアウト">
 				</form>
 			</div>
+		</div>
 
-			<div>
-			<%	if("search".equals(search)){	%>
-					<h1>検索結果</h1>
-			<%	}else if("myreport".equals(myreport)){	%>
-					<h1>あなたの報告書</h1>
-			<%	}else{	%>
-					<h1>報告書一覧</h1>
-			<%	}	%>
+		<div class="main">
+		<%	if("search".equals(search)){	%>
+				<h1 class="m-b30">検索結果</h1>
+		<%	}else if("myreport".equals(myreport)){	%>
+				<h1 class="m-b30">あなたの報告書</h1>
+		<%	}else{	%>
+				<h1 class="m-b30">報告書一覧</h1>
+		<%	}	%>
 
-			<%	if(!"myreport".equals(myreport)){	%>
-					<form action="Report" method="get">
-						<label>
-							<select name="year">
-							<%	if("search".equals(search)){	%>
-									<option></option>
-							<%	}else{	%>
-									<option selected></option>
-							<%
-								}
-
-								LocalDate today = LocalDate.now();
-								int year = today.getYear();
-								int month = today.getMonthValue();
-
-								if(month <= 3){	//1～3月の場合
-									year--;
-								}
-
-								for(int i = year; i >= 2014; i--){
-									if(fy == i){
-							%>
-										<option selected><%= i %></option>
-							<%		}else{	%>
-										<option><%= i %></option>
-							<%
-									}
-								}
-							%>
-							</select>
-						年度</label>
-
-						<%	if("search".equals(search) && company_name != null){	%>
-								<input type="search" name="company_name" value="<%= company_name %>">
+		<%	if(!"myreport".equals(myreport)){	%>
+				<form action="Report" method="get" class="pdf_search m-b30">
+					<label class="not">
+						<select name="year">
+						<%	if("search".equals(search)){	%>
+								<option></option>
 						<%	}else{	%>
-								<input type="search" name="company_name" placeholder="会社名">
-						<%	}	%>
+								<option selected></option>
+						<%
+							}
 
-						<input type="hidden" name="status" value="reading">
-						<input type="hidden" name="search" value="search">
-						<input type="submit" value="検索">
-					</form>
-			<%	}	%>
+							LocalDate today = LocalDate.now();
+							int year = today.getYear();
+							int month = today.getMonthValue();
 
-				<div>
+							if(month <= 3){	//1～3月の場合
+								year--;
+							}
+
+							for(int i = year; i >= 2014; i--){
+								if(fy == i){
+						%>
+									<option selected><%= i %></option>
+						<%		}else{	%>
+									<option><%= i %></option>
+						<%
+								}
+							}
+						%>
+						</select>
+					年度</label>
+
+					<%	if("search".equals(search) && company_name != null){	%>
+							<input type="search" class="s_company" name="company_name" value="<%= company_name %>">
+					<%	}else{	%>
+							<input type="search" class="s_company" name="company_name" placeholder="会社名">
+					<%	}	%>
+
+					<input type="hidden" name="status" value="reading">
+					<input type="hidden" name="search" value="search">
+					<input type="submit" value="検索">
+				</form>
+		<%	}	%>
+
+			<div class="table">
+				<div class="new">
 					<p>新しい順</p>
 				</div>
 
-				<div>
+				<div class="pdf">
 				<%	if(file_nameList.size() == 1){	%>
-						<form action="Report" method="post" name="report" target="_blank">
+						<form action="Report" method="post" name="report" target="_blank" class="m-b10">
 							<input type="hidden" name="status" value="reading">
 							<input type="hidden" name="filename" value="<%= file_nameList.get(0) %>">
 							<a href="javascript:report.submit()"><%= file_nameList.get(0) %></a>
-						</form>
+						</form><br>
 				<%	}else{
 						for(int i = 0; i < file_nameList.size(); i++){
 				%>
-							<form action="Report" method="post" name="report" target="_blank">
+							<form action="Report" method="post" name="report" target="_blank" class="m-b10">
 								<input type="hidden" name="status" value="reading">
 								<input type="hidden" name="filename" value="<%= file_nameList.get(i) %>">
 								<a href="javascript:report[<%= i %>].submit()"><%= file_nameList.get(i) %></a>
-							</form>
+							</form><br>
 				<%
 						}
 					}
 				%>
 				</div>
-
-			<%	if("search".equals(search) || "myreport".equals(myreport)){	%>
-					<form action="Report" method="get">
-						<input type="hidden" name="status" value="reading">
-						<input type="submit" value="一覧へ">
-					</form>
-			<%	}	%>
-
-				<form action="Main" method="get">
-					<input type="submit" value="メインページへ">
-				</form>
 			</div>
+
+			<form action="Main" method="get">
+				<input type="submit" value="メインページへ" class="m-t30 m-b30">
+			</form>
+
+		<%	if("search".equals(search) || "myreport".equals(myreport)){	%>
+				<form action="Report" method="get">
+					<input type="hidden" name="status" value="reading">
+					<input type="submit" value="一覧へ" class="m-t30 m-b30 m-l80">
+				</form>
+		<%	}	%>
 		</div>
 	</body>
 </html>
