@@ -1,4 +1,4 @@
-insert into accout (user_id, pw) value("root","*8005F5ABBDA8E5E0D3B1898377054A6EA33C346D");
+insert into account (user_id, pw) value("root","*8005F5ABBDA8E5E0D3B1898377054A6EA33C346D");
 insert into teacher (name,belongs_id,mail_address,admin_flg,user_id) value("初期管理者","s","root@morijyobi.ac.jp",true,"root");
 
 insert into department (department_id, department_name,number) value('itsys',"情報システム",1);
