@@ -34,7 +34,7 @@
 
 			<form action="ApplicationForm" method="get">
 				<input type="hidden" name="status" value="reading">
-				<input type="submit" value="届出書閲覧" class="m-t30 m-r80">>
+				<input type="submit" value="届出書閲覧" class="m-t30 m-r80">
 			</form>
 
 			<form action="Company" method="get">
